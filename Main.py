@@ -8,8 +8,7 @@ if __name__ == "__main__":
     
     janela.show()
     
-    # --- DISPARANDO NOTIFICAÇÃO DE TESTE ---
-    # Simulando um evento que virá do seu backend/Arduino no futuro!
+
     janela.notificar_alerta(
         "⚠️ Sistema Energia Certa", 
         "Dashboard integrado com sucesso! O sistema de avisos via Notify está ativo."

@@ -12,14 +12,16 @@ class CanvasGraficoEnergia(FigureCanvas):
         
         super().__init__(figura)
         
-        # Dados simulados das últimas horas
-        horas = ['12h', '13h', '14h', '15h', '16h', '17h', '18h']
-        consumo = [3.8, 4.2, 4.5, 4.1, 4.8, 5.2, 4.5]
-        geracao = [2.1, 3.5, 5.8, 6.2, 5.0, 3.1, 1.5]
+    def atualizar_linhas(self, horas, consumo, geracao):
+        """Método chamado pelo QTimer para redesenhar o gráfico em tempo real"""
+        self.eixos.clear() # Limpa o desenho anterior
+        self.eixos.set_facecolor('#1E1E1E')
         
+        # Plota as novas linhas com os dados atualizados
         self.eixos.plot(horas, consumo, color='#E53935', marker='o', linewidth=2, label='Consumo (kWh)')
         self.eixos.plot(horas, geracao, color='#4CAF50', marker='o', linewidth=2, label='Geração (kWh)')
         
+        # Estilização das bordas, títulos e grades
         self.eixos.set_title("Histórico de Geração vs Consumo", color='white', fontsize=12, fontweight='bold', pad=10)
         self.eixos.tick_params(colors='white', labelsize=9)
         
@@ -31,3 +33,5 @@ class CanvasGraficoEnergia(FigureCanvas):
         legenda = self.eixos.legend(facecolor='#1E1E1E', edgecolor='#333333', loc='upper right')
         for texto in legenda.get_texts():
             texto.set_color('white')
+            
+        self.draw() # Diz ao Matplotlib para redesenhar o canvas na tela
