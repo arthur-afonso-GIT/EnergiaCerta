@@ -40,13 +40,13 @@ class PainelSimulacaoDecisao(QWidget):
         self.layout_principal.addWidget(lbl_testes)
         
         # Botão 1: Pico de Consumo
-        self.btn_pico = QPushButton(" Simular Sobrecarga (Pico)")
+        self.btn_pico = QPushButton("Simular Sobrecarga (Pico)")
         self.btn_pico.setStyleSheet(self.estilo_botao("#D32F2F"))
         self.btn_pico.clicked.connect(self.acao_simular_pico)
         self.layout_principal.addWidget(self.btn_pico)
         
         # Botão 2: Superávit Solar
-        self.btn_sol = QPushButton(" Simular Alta Geração Solar")
+        self.btn_sol = QPushButton("Simular Alta Geração Solar")
         self.btn_sol.setStyleSheet(self.estilo_botao("#388E3C"))
         self.btn_sol.clicked.connect(self.acao_simular_sol)
         self.layout_principal.addWidget(self.btn_sol)
@@ -75,13 +75,13 @@ class PainelSimulacaoDecisao(QWidget):
     def acao_simular_pico(self):
         if self.disparar_alerta:
             self.disparar_alerta(
-                " Alerta de Sobrecarga", 
+                "Alerta de Sobrecarga", 
                 "Consumo ultrapassou a meta definida! Executando corte automático de cargas não críticas."
             )
             
     def acao_simular_sol(self):
         if self.disparar_alerta:
             self.disparar_alerta(
-                " Superávit Energético", 
+                "Superávit Energético", 
                 "Geração solar cobrindo 100% da demanda. Iniciando carregamento das baterias."
             )

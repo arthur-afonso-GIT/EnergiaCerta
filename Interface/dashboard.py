@@ -59,15 +59,15 @@ class DashboardEnergia(QMainWindow):
         if not pixmap.isNull():
             self.lbl_logo_imagem.setPixmap(pixmap.scaled(130, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         else:
-            self.lbl_logo_imagem.setText("⭐ Energia Certa")
+            self.lbl_logo_imagem.setText("Energia Certa")
         
         self.botao_menu = QToolButton()
-        self.botao_menu.setText("☰ Menu")
+        self.botao_menu.setText("Menu")
         self.botao_menu.setPopupMode(QToolButton.InstantPopup)
         self.dropmenu = QMenu(self)
-        self.acao_config = QAction("⚙️ Configurações", self)
-        self.acao_hardware = QAction("🔌 Conectar Arduino", self)
-        self.acao_sobre = QAction("ℹ️ Sobre o Projeto", self)
+        self.acao_config = QAction("Configurações", self)
+        self.acao_hardware = QAction("Conectar Arduino", self)
+        self.acao_sobre = QAction("Sobre o Projeto", self)
         self.dropmenu.addAction(self.acao_config)
         self.dropmenu.addAction(self.acao_hardware)
         self.dropmenu.addSeparator()

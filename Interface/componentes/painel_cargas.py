@@ -31,7 +31,7 @@ class PainelCargasCriticas(QWidget):
         dispositivos = ["Geladeira", "Iluminação Sala", "Roteador Internet", "Ar-Condicionado", "Bomba D'água", "Computador"]
         
         for nome in dispositivos:
-            lbl_item = QLabel(f"⚡ {nome}")
+            lbl_item = QLabel(f"{nome}")
             lbl_item.setStyleSheet("""
                 QLabel { 
                     background-color: #2D2D2D; 

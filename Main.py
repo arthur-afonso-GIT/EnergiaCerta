@@ -10,7 +10,7 @@ if __name__ == "__main__":
     
 
     janela.notificar_alerta(
-        "⚠️ Sistema Energia Certa", 
+        "Sistema Energia Certa", 
         "Dashboard integrado com sucesso! O sistema de avisos via Notify está ativo."
     )
     

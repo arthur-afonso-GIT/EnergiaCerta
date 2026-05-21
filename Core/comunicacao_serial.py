@@ -9,7 +9,7 @@ class LeitorArduino:
         self.baudrate = baudrate
         self.conectado = False
         
-        print(f"🔌 Tentando inicializar conexão na porta {self.porta}...")
+        print(f"Tentando inicializar conexão na porta {self.porta}...")
         # Aqui entrará o self.conexao = serial.Serial(porta, baudrate)
         
     def ler_dados_reais(self):
