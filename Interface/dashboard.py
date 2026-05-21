@@ -2,14 +2,14 @@
 import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QToolButton, QMenu, QSystemTrayIcon)
-from PySide6.QtCore import Qt, QTimer # <-- IMPORTAMOS O QTIMER AQUI
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap, QAction, QIcon
 
-# Importando nossos componentes e o simulador do Core
+# Importando nossos componentes e o leitor do Core
 from Interface.componentes.painel_cargas import PainelCargasCriticas
 from Interface.componentes.grafico_tempo_real import CanvasGraficoEnergia
 from Interface.componentes.painel_simulacao import PainelSimulacaoDecisao
-from Core.simulador import SimuladorEnergia # <-- IMPORTADO DO CORE
+from Core.comunicacao_serial import LeitorArduino # <-- IMPORTANDO O NOVO LEITOR CORRIGIDO
 
 class DashboardEnergia(QMainWindow):
     def __init__(self):
@@ -36,8 +36,14 @@ class DashboardEnergia(QMainWindow):
             self.tray_icon.setIcon(QIcon(caminho_logo))
         self.tray_icon.show()
         
-        # --- INICIALIZAÇÃO DO SIMULADOR ---
-        self.simulador = SimuladorEnergia()
+        # --- INICIALIZAÇÃO DO LEITOR DE HARDWARE ---
+        self.leitor = LeitorArduino()
+        
+        # Histórico local limpo para receber a simulação em tempo real
+        self.historico_horas = []
+        self.historico_consumo = []
+        self.historico_geracao = []
+        self.contador_tempo = 10 # Começa em sincronia com o Core
         
         self.widget_central = QWidget()
         self.setCentralWidget(self.widget_central)
@@ -49,7 +55,6 @@ class DashboardEnergia(QMainWindow):
         # -------------------------------------------------------------
         self.coluna_esquerda = QVBoxLayout()
         
-        # Bloco da Logo e Menu
         self.container_logo = QWidget()
         self.container_logo.setStyleSheet("background-color: #1E1E1E; border-radius: 6px; border: 1px solid #333333;")
         self.layout_logo_bloco = QHBoxLayout(self.container_logo)
@@ -59,15 +64,15 @@ class DashboardEnergia(QMainWindow):
         if not pixmap.isNull():
             self.lbl_logo_imagem.setPixmap(pixmap.scaled(130, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         else:
-            self.lbl_logo_imagem.setText("Energia Certa")
+            self.lbl_logo_imagem.setText("⭐ Energia Certa")
         
         self.botao_menu = QToolButton()
-        self.botao_menu.setText("Menu")
+        self.botao_menu.setText("☰ Menu")
         self.botao_menu.setPopupMode(QToolButton.InstantPopup)
         self.dropmenu = QMenu(self)
-        self.acao_config = QAction("Configurações", self)
-        self.acao_hardware = QAction("Conectar Arduino", self)
-        self.acao_sobre = QAction("Sobre o Projeto", self)
+        self.acao_config = QAction("⚙️ Configurações", self)
+        self.acao_hardware = QAction("🔌 Conectar Arduino", self)
+        self.acao_sobre = QAction("ℹ️ Sobre o Projeto", self)
         self.dropmenu.addAction(self.acao_config)
         self.dropmenu.addAction(self.acao_hardware)
         self.dropmenu.addSeparator()
@@ -79,7 +84,6 @@ class DashboardEnergia(QMainWindow):
         
         self.painel_cargas = PainelCargasCriticas()
         
-        # PAINEL DE DECISÃO AUTOMÁTICA (Guardamos a label em self para atualizar o texto depois!)
         self.painel_recomendacoes = QWidget()
         self.painel_recomendacoes.setStyleSheet("background-color: #1E1E1E; border: 1px solid #333333; border-radius: 6px;")
         layout_rec = QVBoxLayout(self.painel_recomendacoes)
@@ -99,7 +103,6 @@ class DashboardEnergia(QMainWindow):
         self.coluna_central = QVBoxLayout()
         self.linha_cards = QHBoxLayout()
         
-        # Guardamos as referências dos valores dos Cards KPI para alterá-los dinamicamente
         self.card_consumo, self.lbl_val_consumo = self.criar_card_kpi("CONSUMO ATUAL", "4.5 kWh", "#E53935")
         self.card_geracao, self.lbl_val_geracao = self.criar_card_kpi("GERAÇÃO ATUAL", "5.2 kWh", "#4CAF50")
         self.card_saldo, self.lbl_val_saldo = self.criar_card_kpi("SALDO ENERGÉTICO", "+0.7 kWh", "#00ACC1")
@@ -124,17 +127,15 @@ class DashboardEnergia(QMainWindow):
         self.painel_simulacao = PainelSimulacaoDecisao(callback_alerta=self.notificar_alerta)
         self.coluna_direita.addWidget(self.painel_simulacao)
         
-        # Acoplamento das Colunas
         self.layout_mestre.addLayout(self.coluna_esquerda, stretch=3)
         self.layout_mestre.addLayout(self.coluna_central, stretch=5)
         self.layout_mestre.addLayout(self.coluna_direita, stretch=3)
         
-        # --- CONFIGURAÇÃO DO TIMER DE ATUALIZAÇÃO AUTOMÁTICA ---
+        # Timer de Atualização
         self.timer = QTimer()
         self.timer.timeout.connect(self.loop_atualizacao_tempo_real)
-        self.timer.start(2000) # Atualiza a cada 2000 milissegundos (2 segundos)
+        self.timer.start(2000)
         
-        # Desenha o estado inicial do gráfico logo na abertura
         self.atualizar_visual_grafico()
 
     def notificar_alerta(self, titulo, message):
@@ -146,40 +147,50 @@ class DashboardEnergia(QMainWindow):
         layout = QVBoxLayout(card)
         t = QLabel(titulo); t.setStyleSheet("font-size: 10px; font-weight: bold; color: #AAAAAA; border: none; background: transparent;")
         t.setAlignment(Qt.AlignCenter)
-        
         v = QLabel(valor_inicial); v.setStyleSheet("font-size: 22px; font-weight: bold; border: none; background: transparent;")
         v.setAlignment(Qt.AlignCenter)
-        
         layout.addWidget(t); layout.addWidget(v)
-        return card, v # Retorna o card e a label do valor separada para podermos editar depois
+        return card, v
 
     def atualizar_visual_grafico(self):
-        """Pega os históricos do simulador e joga para dentro do canvas do Matplotlib"""
         self.canvas_grafico.atualizar_linhas(
-            self.simulador.historico_horas,
-            self.simulador.historico_consumo,
-            self.simulador.historico_geracao
+            self.historico_horas,
+            self.historico_consumo,
+            self.historico_geracao
         )
 
     def loop_atualizacao_tempo_real(self):
-        """Função que roda a cada 2 segundos controlada pelo QTimer"""
-        # 1. Solicita novos dados ao simulador
-        novo_consumo, nova_geracao = self.simulador.atualizar_dados()
+        """Coleta dados do backend baseados física solar e empurra para a interface"""
+        # 1. Coleta os dados e o tempo do novo simulador matemático
+        novo_consumo, nova_geracao, hora_float = self.leitor.ler_dados_reais()
         saldo = round(nova_geracao - novo_consumo, 1)
         
-        # 2. Atualiza o texto dos Cards KPI no topo da tela
+        # Converte a hora float (ex: 10.5) para formato de texto amigável (ex: "10:30")
+        horas_inteiras = int(hora_float)
+        minutos = int((hora_float - horas_inteiras) * 60)
+        texto_hora = f"{horas_inteiras:02d}:{minutos:02d}"
+        
+        # 2. Atualiza os históricos locais para o gráfico seguir a linha do tempo linearmente
+        self.historico_horas.append(texto_hora)
+        self.historico_consumo.append(novo_consumo)
+        self.historico_geracao.append(nova_geracao)
+        
+        if len(self.historico_horas) > 7:
+            self.historico_horas.pop(0)
+            self.historico_consumo.pop(0)
+            self.historico_geracao.pop(0)
+        
+        # 3. Atualiza os componentes visuais dos Cards KPI
         self.lbl_val_consumo.setText(f"{novo_consumo} kWh")
         self.lbl_val_geracao.setText(f"{nova_geracao} kWh")
-        
         sinal = "+" if saldo >= 0 else ""
         self.lbl_val_saldo.setText(f"{sinal}{saldo} kWh")
         
-        # 3. Atualiza o Gráfico de Linhas
         self.atualizar_visual_grafico()
         
-        # 4. Lógica Inteligente para o "Painel de Decisão Automática"
+        # 4. Lógica de decisão automática (Consumo > Geração)
         if saldo < 0:
-            self.lbl_decisao_texto.setText(f"⚠️ DEFICIT DE ENERGIA\nConsumo superando geração em {abs(saldo)} kWh. Recomendado desligar cargas não críticas.")
+            self.lbl_decisao_texto.setText(f"⚠️ DÉFICIT DE ENERGIA\nConsumo superando geração em {abs(saldo)} kWh. Recomendado desligar cargas não críticas.")
             self.lbl_decisao_texto.setStyleSheet("font-size: 13px; font-weight: bold; color: #E53935; background: transparent;")
         else:
             self.lbl_decisao_texto.setText(f"✅ SISTEMA EM SUPERÁVIT\nGeração solar cobrindo toda a demanda com sobra de {saldo} kWh.")
