@@ -4,13 +4,15 @@ import math
 import random
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QToolButton, QMenu, QSystemTrayIcon, 
-                             QPushButton, QInputDialog, QMessageBox, QScrollArea, QTextEdit)
+                             QPushButton, QInputDialog, QTabWidget, QMessageBox, QScrollArea, QTextEdit, QFrame)
 from PySide6.QtCore import Qt, QTimer, QTime
 from PySide6.QtGui import QPixmap, QAction, QIcon
 
 from Interface.componentes.grafico_tempo_real import CanvasGraficoEnergia
 from Interface.componentes.painel_simulacao import PainelSimulacaoDecisao
 from leitor import LeitorHardware
+from Interface.componentes.painel_bateria import PainelBateria
+from PySide6.QtWidgets import QTabWidget 
 
 class DashboardEnergia(QMainWindow):
     def __init__(self):
@@ -39,11 +41,6 @@ class DashboardEnergia(QMainWindow):
         self.historico_horas = []
         self.historico_consumo = []
         self.historico_geracao = []
-        
-        self.widget_central = QWidget()
-        self.setCentralWidget(self.widget_central)
-        self.layout_mestre = QHBoxLayout()
-        self.widget_central.setLayout(self.layout_mestre)
         
         # -------------------------------------------------------------
         # COLUNA 1: ESQUERDA (Logo, Cargas e Resumo IA)
@@ -153,20 +150,97 @@ class DashboardEnergia(QMainWindow):
         self.coluna_central.addWidget(self.container_grafico, stretch=5)
         
         # -------------------------------------------------------------
-        # COLUNA 3: DIREITA (Simulador + Novo Terminal de Decisões)
+        # COLUNA 3: DIREITA (Configurações, Agendamento e Logs)
         # -------------------------------------------------------------
         self.coluna_direita = QVBoxLayout()
         
-        # Painel do Slider superior
-        self.painel_simulacao = PainelSimulacaoDecisao(callback_alerta=self.notificar_alerta)
-        self.coluna_direita.addWidget(self.painel_simulacao, stretch=4)
+        # --- PAINEL DE METAS E PARAMETRIZAÇÃO ---
+        self.container_metas = QWidget()
+        self.container_metas.setStyleSheet("background-color: #1E1E1E; border: 1px solid #333333; border-radius: 6px;")
+        layout_metas_interno = QVBoxLayout(self.container_metas)
+        layout_metas_interno.setContentsMargins(10, 10, 10, 10)
+
+        lbl_titulo_metas = QLabel("Configuracao de Metas")
+        lbl_titulo_metas.setStyleSheet("font-weight: bold; font-size: 14px; color: #FFFFFF; border: none;")
+        layout_metas_interno.addWidget(lbl_titulo_metas)
+
+        self.lbl_meta_status = QLabel("Meta Limite de Consumo: 5.0 kWh")
+        self.lbl_meta_status.setStyleSheet("font-size: 11px; color: #B0BEC5; border: none; margin-top: 5px;")
+        layout_metas_interno.addWidget(self.lbl_meta_status)
+
+        from PySide6.QtWidgets import QSlider
+        self.sld_meta_consumo = QSlider(Qt.Horizontal)
+        self.sld_meta_consumo.setMinimum(10)  
+        self.sld_meta_consumo.setMaximum(100) 
+        self.sld_meta_consumo.setValue(50)    
+        self.sld_meta_consumo.setStyleSheet("""
+            QSlider::groove:horizontal {
+                height: 6px;
+                background: #2D2D2D;
+                border-radius: 3px;
+            }
+            QSlider::handle:horizontal {
+                background: #00ACC1;
+                width: 14px;
+                margin-top: -4px;
+                margin-bottom: -4px;
+                border-radius: 7px;
+            }
+        """)
+        layout_metas_interno.addWidget(self.sld_meta_consumo)
+        
+        self.sld_meta_consumo.valueChanged.connect(
+            lambda v: self.lbl_meta_status.setText(f"Meta Limite de Consumo: {v/10.0:.1f} kWh")
+        )
+
+        self.coluna_direita.addWidget(self.container_metas, stretch=3)
+        
+        # --- PAINEL PREDITIVO DE AGENDAMENTO INTELIGENTE ---
+        self.container_preditivo = QWidget()
+        self.container_preditivo.setStyleSheet("background-color: #1E1E1E; border: 1px solid #333333; border-radius: 6px;")
+        layout_preditivo_interno = QVBoxLayout(self.container_preditivo)
+        layout_preditivo_interno.setContentsMargins(10, 10, 10, 10)
+
+        lbl_titulo_preditivo = QLabel("Agendamento Inteligente (Otimizacao)")
+        lbl_titulo_preditivo.setStyleSheet("font-weight: bold; font-size: 12px; color: #00ACC1; border: none;")
+        layout_preditivo_interno.addWidget(lbl_titulo_preditivo)
+
+        # Caixa 1: Melhor horário para aparelhos pesados
+        self.box_melhor_horario = QFrame()
+        self.box_melhor_horario.setStyleSheet("background-color: #121212; border: 1px solid #2D2D2D; border-radius: 4px;")
+        layout_box1 = QVBoxLayout(self.box_melhor_horario)
+        
+        self.lbl_carga_titulo = QLabel("JANELA DE USO RECOMENDADA")
+        self.lbl_carga_titulo.setStyleSheet("font-size: 9px; font-weight: bold; color: #888888; border: none;")
+        self.lbl_carga_status = QLabel("Aguardando analise de fluxo...")
+        self.lbl_carga_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
+        
+        layout_box1.addWidget(self.lbl_carga_titulo)
+        layout_box1.addWidget(self.lbl_carga_status)
+        layout_preditivo_interno.addWidget(self.box_melhor_horario)
+
+        # Caixa 2: Status e recomendação da bateria
+        self.box_bateria_horario = QFrame()
+        self.box_bateria_horario.setStyleSheet("background-color: #121212; border: 1px solid #2D2D2D; border-radius: 4px;")
+        layout_box2 = QVBoxLayout(self.box_bateria_horario)
+        
+        self.lbl_bat_titulo = QLabel("DIRETRIZ DE CARGA DA BATERIA")
+        self.lbl_bat_titulo.setStyleSheet("font-size: 9px; font-weight: bold; color: #888888; border: none;")
+        self.lbl_bateria_status = QLabel("Aguardando estabilizacao de matriz...")
+        self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FFC107; font-weight: bold; border: none;")
+        
+        layout_box2.addWidget(self.lbl_bat_titulo)
+        layout_box2.addWidget(self.lbl_bateria_status)
+        layout_preditivo_interno.addWidget(self.box_bateria_horario)
+
+        self.coluna_direita.addWidget(self.container_preditivo, stretch=4)
         
         # --- PAINEL DE DECISÕES RECOMENDADAS ---
         self.container_recomendacoes_LOG = QWidget()
         self.container_recomendacoes_LOG.setStyleSheet("background-color: #1E1E1E; border: 1px solid #333333; border-radius: 6px;")
         layout_log_interno = QVBoxLayout(self.container_recomendacoes_LOG)
         
-        lbl_titulo_log = QLabel("📋 Recomendações e Ações da IA")
+        lbl_titulo_log = QLabel("Recomendações e Ações da IA")
         lbl_titulo_log.setStyleSheet("font-weight: bold; font-size: 12px; color: #00ACC1; border: none;")
         layout_log_interno.addWidget(lbl_titulo_log)
         
@@ -182,10 +256,45 @@ class DashboardEnergia(QMainWindow):
                 border-radius: 4px;
             }
         """)
-        self.txt_historico_decisoes.append("ℹ️ Sistema iniciado. Monitoramento de IA ativo...")
+        self.txt_historico_decisoes.append("Sistema iniciado. Monitoramento de IA ativo...")
         layout_log_interno.addWidget(self.txt_historico_decisoes)
         
         self.coluna_direita.addWidget(self.container_recomendacoes_LOG, stretch=5)
+
+        # -------------------------------------------------------------
+        # 🚀 CONFIGURAÇÃO PRINCIPAL DO SISTEMA DE ABAS (CORRIGIDO)
+        # -------------------------------------------------------------
+        from PySide6.QtWidgets import QTabWidget
+        self.abas = QTabWidget()
+        self.setCentralWidget(self.abas)
+        
+        # Customização escura para as abas se integrarem ao layout
+        self.abas.setStyleSheet("""
+            QTabWidget::pane { border: 1px solid #333333; background-color: #121212; }
+            QTabBar::tab { background: #1E1E1E; color: #888888; padding: 10px 20px; font-weight: bold; border: 1px solid #2D2D2D; }
+            QTabBar::tab:selected { background: #121212; color: #00ACC1; border-bottom: 2px solid #00ACC1; }
+        """)
+
+        # --- ABA 1: MONITORAMENTO GERAL ---
+        self.aba_principal = QWidget()
+        
+        # Criamos o layout interno da Aba 1 e linkamos o ponteiro antigo
+        # para que as linhas de código abaixo (ex: linha 295) funcionem sem quebrar!
+        self.layout_mestre = QHBoxLayout(self.aba_principal)
+        
+        # Adiciona os componentes existentes à primeira aba usando os comandos originais
+        self.layout_mestre.addLayout(self.coluna_esquerda, stretch=3)
+        self.layout_mestre.addLayout(self.coluna_central, stretch=5)
+        self.layout_mestre.addLayout(self.coluna_direita, stretch=4)
+        
+        # Entrega a aba principal montada ao gerenciador
+        self.abas.addTab(self.aba_principal, "📊 Monitoramento Geral")
+
+        # --- ABA 2: BANCO DE BATERIAS ---
+        # Instancia a nova tela modular do arquivo separado
+        self.aba_bateria = PainelBateria()
+        self.abas.addTab(self.aba_bateria, "🔋 Banco de Baterias")
+        
         
         # -------------------------------------------------------------
         # Montagem Final da Tela
@@ -347,7 +456,6 @@ class DashboardEnergia(QMainWindow):
 
     def loop_atualizacao_tempo_real(self):
         try:
-            # 1. Integração com o Leitor de Hardware / Simulação
             if hasattr(self, 'leitor') and hasattr(self.leitor, 'ler_dados_reais'):
                 dados = self.leitor.ler_dados_reais()
                 if dados and len(dados) == 3:
@@ -377,7 +485,6 @@ class DashboardEnergia(QMainWindow):
             minutos = int((hora_float - horas_inteiras) * 60)
             texto_hora = f"{horas_inteiras:02d}:{minutos:02d}"
 
-            # 2. Cálculo da Eficiência Energética em %
             if novo_consumo > 0:
                 eficiencia_porcentagem = min(100, int((nova_geracao / novo_consumo) * 100))
             else:
@@ -397,13 +504,11 @@ class DashboardEnergia(QMainWindow):
             sinal = "+" if saldo >= 0 else ""
             self.lbl_val_saldo.setText(f"{sinal}{saldo} kWh")
 
-            # 3. Atualização do Gráfico base
             if hasattr(self.canvas_grafico, 'atualizar_linhas'):
                 self.canvas_grafico.atualizar_linhas(self.historico_horas, self.historico_consumo, self.historico_geracao)
             elif hasattr(self.canvas_grafico, 'plotar_dados'):
                 self.canvas_grafico.plotar_dados(self.historico_horas, self.historico_consumo, self.historico_geracao)
 
-            # 4. Injeção da Porcentagem por cima do gráfico limpo
             if hasattr(self, 'canvas_grafico') and hasattr(self.canvas_grafico, 'ax'):
                 self.canvas_grafico.ax.texts.clear()
                 
@@ -415,7 +520,7 @@ class DashboardEnergia(QMainWindow):
                     cor_badge = "#FF5252"
                 
                 self.canvas_grafico.ax.text(
-                    0.96, 0.93, f"Eficiência: {eficiencia_porcentagem}%",
+                    0.96, 0.93, f"Eficiencia: {eficiencia_porcentagem}%",
                     transform=self.canvas_grafico.ax.transAxes,
                     color=cor_badge,
                     fontsize=10,
@@ -432,10 +537,10 @@ class DashboardEnergia(QMainWindow):
                 )
                 self.canvas_grafico.draw()
 
-            # --- 5. ALGORITMO DE INTELIGÊNCIA E DECISÕES DE CORTE AUTOMÁTICO ---
             cargas_nao_criticas_ativas = [n for n, info in self.config_cargas.items() if not info["critica"] and info["ativo"]]
             cargas_nao_criticas_desligadas = [n for n, info in self.config_cargas.items() if not info["critica"] and not info["ativo"]]
 
+            # Controle de interface das caixas de alertas inferiores
             if saldo < 0:
                 if cargas_nao_criticas_ativas:
                     carga_alvo = cargas_nao_criticas_ativas[0]
@@ -443,15 +548,13 @@ class DashboardEnergia(QMainWindow):
                         self.config_cargas[carga_alvo]["ativo"] = False
                         self.atualizar_visual_botao(carga_alvo)
                         
-                        self.lbl_decisao_texto.setText(f"⚠️ CORTE SELETIVO:\nSaldo negativo ({saldo} kWh). Desligado '{carga_alvo}'.")
-                        self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #E53935; background: transparent;")
-                        
-                        # Alimenta o histórico de recomendações/decisões da IA
-                        self.adicionar_recomendacao_log(f"⚙️ Decisão: '{carga_alvo}' cortado automaticamente para conter o défice.")
+                        self.lbl_decisao_texto.setText(f"CORTE SELETIVO ATIVADO\nDeficit de {abs(saldo)} kWh. Dispositivo '{carga_alvo}' desligado.")
+                        self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #FF5252; background: transparent;")
+                        self.adicionar_recomendacao_log(f"Acao: Desconexao automatica de '{carga_alvo}' para estabilizacao da rede.")
                 else:
-                    self.lbl_decisao_texto.setText("🚨 ALERTA GERAL:\nConsumo crítico supera a geração!")
+                    self.lbl_decisao_texto.setText("ALERTA CRITICO\nDemanda essencial excede a capacidade de geracao solar atual.")
                     self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #FF1744; background: transparent;")
-                    self.adicionar_recomendacao_log("🚨 Alerta Crítico: Risco de colapso, cargas essenciais operando sem margem solar.")
+                    self.adicionar_recomendacao_log("Alerta: Colapso iminente. Cargas criticas operando sem margem de seguranca.")
             else:
                 if cargas_nao_criticas_desligadas:
                     carga_alvo = cargas_nao_criticas_desligadas[-1]
@@ -459,63 +562,113 @@ class DashboardEnergia(QMainWindow):
                         self.config_cargas[carga_alvo]["ativo"] = True
                         self.atualizar_visual_botao(carga_alvo)
                         
-                        self.lbl_decisao_texto.setText(f"✅ REDE ENERGIZADA:\nSobrou energia solar! Religado '{carga_alvo}'.")
+                        self.lbl_decisao_texto.setText(f"SISTEMA ENERGIZADO\nSuperavit de +{saldo} kWh. Dispositivo '{carga_alvo}' reativado.")
                         self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #4CAF50; background: transparent;")
-                        
-                        # Alimenta o histórico de recomendações/decisões da IA
-                        self.adicionar_recomendacao_log(f"⚙️ Decisão: '{carga_alvo}' reativado de forma segura.")
+                        self.adicionar_recomendacao_log(f"Acao: Reativacao segura do dispositivo '{carga_alvo}'.")
                 else:
-                    self.lbl_decisao_texto.setText("✅ OPERAÇÃO NORMAL\nDemanda totalmente suprida.")
+                    self.lbl_decisao_texto.setText("OPERACAO NORMAL\nGeracao solar estavel e demanda totalmente suprida.")
                     self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #4CAF50; background: transparent;")
 
-            # --- 6. ANÁLISE PREDITIVA E RECOMENDAÇÕES DE STATUS ---
-            ar_ativo = self.config_cargas.get("Ar-Condicionado", {}).get("ativo", False)
+            # --- 6. ANÁLISE PREDITIVA E ATUALIZAÇÃO DO PAINEL INTELIGENTE ---
+            meta_limite = 5.0
+            if hasattr(self, 'sld_meta_consumo'):
+                meta_limite = self.sld_meta_consumo.value() / 10.0
+            elif hasattr(self, 'slider_meta'):
+                meta_limite = self.slider_meta.value()
+
+            ar_info = self.config_cargas.get("Ar-Condicionado", {"ativo": False, "potencia": 2.0})
+            bomba_info = self.config_cargas.get("Bomba D’água", {"ativo": False, "potencia": 1.2})
+            
             linhas_log = self.txt_historico_decisoes.toPlainText().split('\n') if hasattr(self, 'txt_historico_decisoes') else []
             ultima_linha = linhas_log[-1] if linhas_log else ""
-            
-            if (hora_float < 8.0 or hora_float > 17.0) and ar_ativo:
-                if "Ineficiência" not in ultima_linha:
-                    self.adicionar_recomendacao_log("⚠️ Ineficiência: Ar-Condicionado ativo em período de baixa ou nula captação solar.")
 
-            if 6.0 <= hora_float < 10.0:
-                if "Sugestão" not in ultima_linha:
-                    self.adicionar_recomendacao_log("💡 Sugestão: Programe o uso de aparelhos de alto consumo (Ex: Bomba) para entre as 11h e 14h.")
-            
-            if eficiencia_porcentagem == 100:
-                if "Excelente aproveitamento" not in ultima_linha:
-                    self.adicionar_recomendacao_log(f"📈 Eficiência: Matriz solar cobrindo 100% da demanda atual.")
-            elif eficiencia_porcentagem < 80:
-                if "Eficiência baixa" not in ultima_linha:
-                    self.adicionar_recomendacao_log(f"📉 Feedback: Eficiência em {eficiencia_porcentagem}%. Dependência da rede elétrica externa detectada.")
+            # Cálculo matemático do fator solar atual
+            fator_solar = 0.0
+            if 6.0 <= hora_float <= 18.0:
+                fator_solar = math.sin(math.pi * (hora_float - 6.0) / 12.0)
+            eficiencia_fator_pct = int(fator_solar * 100)
+
+            # 6.1 - Atualização funcional do painel: Janela de Uso Recomendada
+            if 10.0 <= hora_float <= 14.0:
+                if hasattr(self, 'lbl_carga_status'):
+                    self.lbl_carga_status.setText(f"Janela ideal ativa. Eficiencia solar em {eficiencia_fator_pct}%.")
+                    self.lbl_carga_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
+            else:
+                if hasattr(self, 'lbl_carga_status'):
+                    self.lbl_carga_status.setText("Evite cargas pesadas. Sugerido postergar para as 12:00.")
+                    self.lbl_carga_status.setStyleSheet("font-size: 11px; color: #FF9800; font-weight: bold; border: none;")
+
+            # 6.2 - Atualização funcional do painel: Diretriz de Carga da Bateria
+            if hasattr(self, 'lbl_bateria_status'):
+                if saldo > 1.5 and fator_solar > 0.7:
+                    self.lbl_bateria_status.setText(f"Superavit de +{saldo} kWh. Prioridade: Carregamento Total.")
+                    self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
+                elif saldo < 0:
+                    self.lbl_bateria_status.setText("Rede em deficit. Bateria recomendada para suprir consumo.")
+                    self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #F44336; font-weight: bold; border: none;")
+                else:
+                    if 6.0 <= hora_float <= 10.0:
+                        self.lbl_bateria_status.setText("Inicio de geracao. Carga lenta em andamento.")
+                        self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FFC107; font-weight: bold; border: none;")
+                    else:
+                        self.lbl_bateria_status.setText("Geracao nula. Modo de conservacao ativado.")
+                        self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #9E9E9E; font-weight: bold; border: none;")
+
+            # 6.3 - Gatilhos de Logs e Popups da IA (Histórico inferior)
+            if novo_consumo > meta_limite:
+                excesso = round(novo_consumo - meta_limite, 1)
+                if ar_info["ativo"] and "responsavel por" not in ultima_linha.lower():
+                    impacto_ar = int((ar_info["potencia"] / novo_consumo) * 100)
+                    self.adicionar_recomendacao_log(f"Otimizacao: Limite excedido em {excesso} kWh. O Ar-Condicionado representa {impacto_ar}% do consumo.")
+
+            if bomba_info["ativo"] and fator_solar < 0.6 and "desloque" not in ultima_linha.lower():
+                self.adicionar_recomendacao_log(f"Sugestao: Eficiencia solar de apenas {eficiencia_fator_pct}%. Desloque a Bomba para as 12:00.")
+
+            if eficiencia_porcentagem == 100 and nova_geracao > (novo_consumo + 1.0) and "superavit solar" not in ultima_linha.lower():
+                sobra = round(nova_geracao - novo_consumo, 1)
+                self.adicionar_recomendacao_log(f"Analise: Superavit solar de {sobra} kWh verificado. Capacidade livre para novas cargas.")
 
         except Exception as e:
-            print(f"Erro interno no loop de atualização: {e}")
+            print(f"Erro no loop de atualizacao: {e}")
 
     def adicionar_recomendacao_log(self, mensagem):
-        """Escreve uma linha com o horário atual dentro do painel e dispara uma notificação na tela"""
         from PySide6.QtCore import QTime
         hora_log = QTime.currentTime().toString("HH:mm:ss")
         
+        if not hasattr(self, '_ultimas_mensagens_ia'):
+            self._ultimas_mensagens_ia = set()
+
         if hasattr(self, 'txt_historico_decisoes'):
             linhas_atuais = self.txt_historico_decisoes.toPlainText().split('\n')
-            
-            # Limpa o "Monitoramento de IA ativo..." inicial no primeiro log real
-            if len(linhas_atuais) == 1 and "Monitoramento de IA ativo" in linhas_atuais[0]:
+            if len(linhas_atuais) == 1 and "Monitoramento de IA" in linhas_atuais[0]:
                 self.txt_historico_decisoes.clear()
-                linhas_atuais = []
 
-            ultima_linha = linhas_atuais[-1] if linhas_atuais else ""
-            
-            # Garante que não vai entupir o log repetindo mensagens idênticas em sequência
-            if mensagem not in ultima_linha:
+            if mensagem not in self._ultimas_mensagens_ia:
                 self.txt_historico_decisoes.append(f"[{hora_log}] {mensagem}")
                 self.txt_historico_decisoes.ensureCursorVisible()
                 
-                # --- DISPARAR NOTIFICAÇÕES VISUAIS DA IA ---
-                if hasattr(self, 'notificar_alerta'):
-                    if "🚨" in mensagem or "⚠️" in mensagem or "Decisão" in mensagem:
-                        self.notificar_alerta("IA: Gerenciamento Ativo", mensagem)
-                    elif "💡" in mensagem or "Sugestão" in mensagem:
-                        self.notificar_alerta("IA: Sugestão de Economia", mensagem)
-                    elif "📈" in mensagem or "Eficiência" in mensagem:
-                        self.notificar_alerta("IA: Desempenho do Sistema", message=mensagem)
+                self._ultimas_mensagens_ia.add(mensagem)
+                if len(self._ultimas_mensagens_ia) > 10:
+                    self._ultimas_mensagens_ia.pop()
+
+                if hasattr(self, 'notificar_alerta') and hasattr(self, 'isVisible') and self.isVisible():
+                    self.notificar_alerta("Gerenciamento de Energia", mensagem)
+
+    def closeEvent(self, event):
+        """Interrompe todas as atividades e timers de fundo ao fechar o software"""
+        print("Finalizando aplicacao...")
+        
+        if hasattr(self, 'timer') and self.timer.isActive():
+            self.timer.stop()
+        elif hasattr(self, 'timer_atualizacao') and self.timer_atualizacao.isActive():
+            self.timer_atualizacao.stop()
+            
+        if hasattr(self, 'leitor') and hasattr(self.leitor, 'conexao') and self.leitor.conexao:
+            try:
+                self.leitor.conexao.close()
+            except Exception:
+                pass
+
+        event.accept()
+        from PySide6.QtCore import QCoreApplication
+        QCoreApplication.quit()
