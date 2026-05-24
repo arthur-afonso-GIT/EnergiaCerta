@@ -10,11 +10,13 @@ from PySide6.QtGui import QPixmap, QAction, QIcon
 
 from Interface.componentes.grafico_tempo_real import CanvasGraficoEnergia
 from Interface.componentes.painel_simulacao import PainelSimulacaoDecisao
+from leitor import LeitorHardware
 
 class DashboardEnergia(QMainWindow):
     def __init__(self):
         super().__init__()
         
+        self.leitor = LeitorHardware(porta='COM3')
         self.setWindowTitle("Energia Certa - Dashboard Principal")
         self.resize(1240, 720)
         
@@ -200,11 +202,62 @@ class DashboardEnergia(QMainWindow):
         self.tray_icon.showMessage(titulo, message, QSystemTrayIcon.Information, 3000)
 
     def adicionar_recomendacao_log(self, mensagem):
-        """Adiciona mensagens em tempo real ao novo painel terminal"""
-        hora_atual_sistema = QTime.currentTime().toString("HH:mm:ss")
+        """Escreve uma linha com o horário atual dentro do painel e dispara uma notificação na tela"""
+        from PySide6.QtCore import QTime
+        hora_log = QTime.currentTime().toString("HH:mm:ss")
+        
+        # Cria um atributo de histórico na janela se ele não existir ainda
+        if not hasattr(self, '_ultimas_mensagens_ia'):
+            self._ultimas_mensagens_ia = set()
+
         if hasattr(self, 'txt_historico_decisoes'):
-            self.txt_historico_decisoes.append(f"[{hora_atual_sistema}] {mensagem}")
-            self.txt_historico_decisoes.ensureCursorVisible()
+            linhas_atuais = self.txt_historico_decisoes.toPlainText().split('\n')
+            
+            # Limpa o "Monitoramento de IA ativo..." inicial no primeiro log real
+            if len(linhas_atuais) == 1 and "Monitoramento de IA ativo" in linhas_atuais[0]:
+                self.txt_historico_decisoes.clear()
+
+            # SÓ DISPARA SE A MENSAGEM FOR INÉDITA NAS ÚLTIMAS LEITURAS
+            if mensagem not in self._ultimas_mensagens_ia:
+                self.txt_historico_decisoes.append(f"[{hora_log}] {mensagem}")
+                self.txt_historico_decisoes.ensureCursorVisible()
+                
+                # Guarda na memória para não repetir o popup
+                self._ultimas_mensagens_ia.add(mensagem)
+                
+                # Limita o tamanho da memória para não acumular lixo
+                if len(self._ultimas_mensagens_ia) > 10:
+                    self._ultimas_mensagens_ia.pop()
+
+                # --- DISPARAR NOTIFICAÇÕES VISUAIS DA IA ---
+                if hasattr(self, 'notificar_alerta'):
+                    if "🚨" in mensagem or "⚠️" in mensagem or "Decisão" in mensagem:
+                        self.notificar_alerta("IA: Gerenciamento Ativo", mensagem)
+                    elif "💡" in mensagem or "Sugestão" in mensagem:
+                        self.notificar_alerta("IA: Sugestão de Economia", mensagem)
+                    elif "📈" in mensagem or "Eficiência" in mensagem:
+                        self.notificar_alerta("IA: Desempenho do Sistema", mensagem)
+            
+    def closeEvent(self, event):
+        """Método nativo do PySide que é disparado automaticamente quando a janela fecha"""
+        print("Stopping background activities and closing...")
+        
+        # 1. Procura pelo timer e para a execução dele imediatamente
+        if hasattr(self, 'timer') and self.timer.isActive():
+            self.timer.stop()
+        elif hasattr(self, 'timer_atualizacao') and self.timer_atualizacao.isActive():
+            self.timer_atualizacao.stop()
+            
+        # 2. Se o leitor de hardware estiver aberto, fecha a conexão serial
+        if hasattr(self, 'leitor') and hasattr(self.leitor, 'conexao') and self.leitor.conexao:
+            try:
+                self.leitor.conexao.close()
+                print("🔌 Conexão serial com o Arduino encerrada com segurança.")
+            except Exception as e:
+                print(f"Erro ao fechar serial: {e}")
+
+        # Aceita o fechamento da janela e encerra o processo do PySide
+        event.accept()
 
     def criar_card_kpi(self, titulo, valor_inicial, cor_borda):
         card = QWidget()
@@ -294,7 +347,7 @@ class DashboardEnergia(QMainWindow):
 
     def loop_atualizacao_tempo_real(self):
         try:
-            # 1. Integração resiliente com o Backend / Geração de dados simulados
+            # 1. Integração com o Leitor de Hardware / Simulação
             if hasattr(self, 'leitor') and hasattr(self.leitor, 'ler_dados_reais'):
                 dados = self.leitor.ler_dados_reais()
                 if dados and len(dados) == 3:
@@ -379,7 +432,7 @@ class DashboardEnergia(QMainWindow):
                 )
                 self.canvas_grafico.draw()
 
-            # 5. Algoritmo de Inteligência e Decisões de Corte Automático
+            # --- 5. ALGORITMO DE INTELIGÊNCIA E DECISÕES DE CORTE AUTOMÁTICO ---
             cargas_nao_criticas_ativas = [n for n, info in self.config_cargas.items() if not info["critica"] and info["ativo"]]
             cargas_nao_criticas_desligadas = [n for n, info in self.config_cargas.items() if not info["critica"] and not info["ativo"]]
 
@@ -393,15 +446,12 @@ class DashboardEnergia(QMainWindow):
                         self.lbl_decisao_texto.setText(f"⚠️ CORTE SELETIVO:\nSaldo negativo ({saldo} kWh). Desligado '{carga_alvo}'.")
                         self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #E53935; background: transparent;")
                         
+                        # Alimenta o histórico de recomendações/decisões da IA
                         self.adicionar_recomendacao_log(f"⚙️ Decisão: '{carga_alvo}' cortado automaticamente para conter o défice.")
-                        self.notificar_alerta("Gestão de Cargas", f"Aparelho desligado automaticamente: {carga_alvo}")
                 else:
                     self.lbl_decisao_texto.setText("🚨 ALERTA GERAL:\nConsumo crítico supera a geração!")
                     self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #FF1744; background: transparent;")
-                    
-                    linhas_log = self.txt_historico_decisoes.toPlainText().split('\n') if hasattr(self, 'txt_historico_decisoes') else []
-                    if "🚨 Alerta Crítico" not in (linhas_log[-1] if linhas_log else ""):
-                        self.adicionar_recomendacao_log("🚨 Alerta Crítico: Risco de colapso, cargas essenciais operando sem margem solar.")
+                    self.adicionar_recomendacao_log("🚨 Alerta Crítico: Risco de colapso, cargas essenciais operando sem margem solar.")
             else:
                 if cargas_nao_criticas_desligadas:
                     carga_alvo = cargas_nao_criticas_desligadas[-1]
@@ -412,12 +462,13 @@ class DashboardEnergia(QMainWindow):
                         self.lbl_decisao_texto.setText(f"✅ REDE ENERGIZADA:\nSobrou energia solar! Religado '{carga_alvo}'.")
                         self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #4CAF50; background: transparent;")
                         
+                        # Alimenta o histórico de recomendações/decisões da IA
                         self.adicionar_recomendacao_log(f"⚙️ Decisão: '{carga_alvo}' reativado de forma segura.")
                 else:
                     self.lbl_decisao_texto.setText("✅ OPERAÇÃO NORMAL\nDemanda totalmente suprida.")
                     self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #4CAF50; background: transparent;")
 
-            # 6. Análise Preditiva e Recomendações de Logs da IA
+            # --- 6. ANÁLISE PREDITIVA E RECOMENDAÇÕES DE STATUS ---
             ar_ativo = self.config_cargas.get("Ar-Condicionado", {}).get("ativo", False)
             linhas_log = self.txt_historico_decisoes.toPlainText().split('\n') if hasattr(self, 'txt_historico_decisoes') else []
             ultima_linha = linhas_log[-1] if linhas_log else ""
@@ -447,21 +498,24 @@ class DashboardEnergia(QMainWindow):
         
         if hasattr(self, 'txt_historico_decisoes'):
             linhas_atuais = self.txt_historico_decisoes.toPlainText().split('\n')
-            ultima_linha = lines_atuais[-1] if linhas_atuais else ""
             
-            # Evita duplicar a mesma recomendação em sequência
+            # Limpa o "Monitoramento de IA ativo..." inicial no primeiro log real
+            if len(linhas_atuais) == 1 and "Monitoramento de IA ativo" in linhas_atuais[0]:
+                self.txt_historico_decisoes.clear()
+                linhas_atuais = []
+
+            ultima_linha = linhas_atuais[-1] if linhas_atuais else ""
+            
+            # Garante que não vai entupir o log repetindo mensagens idênticas em sequência
             if mensagem not in ultima_linha:
                 self.txt_historico_decisoes.append(f"[{hora_log}] {mensagem}")
                 self.txt_historico_decisoes.ensureCursorVisible()
                 
-                # --- SISTEMA DE NOTIFICAÇÃO DA IA ---
-                # Identifica o tipo de mensagem para mandar o alerta correto na tela
+                # --- DISPARAR NOTIFICAÇÕES VISUAIS DA IA ---
                 if hasattr(self, 'notificar_alerta'):
-                    if "🚨" in mensagem or "⚠️" in mensagem or "Ineficiência" in mensagem:
-                        self.notificar_alerta("IA: Otimização de Carga", mensagem)
+                    if "🚨" in mensagem or "⚠️" in mensagem or "Decisão" in mensagem:
+                        self.notificar_alerta("IA: Gerenciamento Ativo", mensagem)
                     elif "💡" in mensagem or "Sugestão" in mensagem:
                         self.notificar_alerta("IA: Sugestão de Economia", mensagem)
                     elif "📈" in mensagem or "Eficiência" in mensagem:
-                        self.notificar_alerta("IA: Desempenho do Sistema", mensagem)
-                    else:
-                        self.notificar_alerta("IA: Recomendação", mensagem)
+                        self.notificar_alerta("IA: Desempenho do Sistema", message=mensagem)

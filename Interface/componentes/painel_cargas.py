@@ -1,46 +1,60 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea
+# Arquivo: Interface/componentes/painel_cargas.py
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Qt
 
 class PainelCargasCriticas(QWidget):
     def __init__(self):
         super().__init__()
         
-        self.setStyleSheet("background-color: #1E1E1E; border-radius: 6px; border: 1px solid #333333;")
-        self.layout_principal = QVBoxLayout(self)
+        self.setStyleSheet("""
+            QWidget { background-color: #1E1E1E; border: 1px solid #333333; border-radius: 6px; }
+            QLabel { color: #FFFFFF; font-size: 14px; font-weight: bold; border: none; background: transparent; }
+            QPushButton { 
+                background-color: #2D2D2D; color: #FFFFFF; border: 1px solid #444444; 
+                border-radius: 4px; padding: 10px; text-align: left; font-size: 12px;
+            }
+            QPushButton:hover { background-color: #3D3D3D; }
+        """)
         
-        lbl_titulo = QLabel("Cargas Críticas")
-        lbl_titulo.setStyleSheet("font-size: 14px; font-weight: bold; color: #FFFFFF; border: none; background: transparent;")
+        layout = QVBoxLayout(self)
+        
+        lbl_titulo = QLabel("Monitoramento de Cargas")
         lbl_titulo.setAlignment(Qt.AlignCenter)
-        self.layout_principal.addWidget(lbl_titulo)
+        layout.addWidget(lbl_titulo)
         
-        self.scroll_area = QScrollArea()
-        self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setStyleSheet("border: none; background: transparent;")
+        # Definição clara: Quais são críticas (nunca desligam) e quais não são (podem ser cortadas)
+        self.cargas = {
+            "Geladeira": {"critica": True, "botao": QPushButton("⚡ [CRÍTICA] Geladeira")},
+            "Iluminação Sala": {"critica": True, "botao": QPushButton("⚡ [CRÍTICA] Iluminação Sala")},
+            "Roteador Internet": {"critica": True, "botao": QPushButton("⚡ [CRÍTICA] Roteador Internet")},
+            "Ar-Condicionado": {"critica": False, "botao": QPushButton("⚡ [SISTEMA] Ar-Condicionado")},
+            "Bomba D'água": {"critica": False, "botao": QPushButton("⚡ [SISTEMA] Bomba D'água")},
+            "Computador": {"critica": False, "botao": QPushButton("⚡ [SISTEMA] Computador")}
+        }
         
-        self.conteudo_scroll = QWidget()
-        self.conteudo_scroll.setStyleSheet("background: transparent; border: none;")
-        self.layout_lista = QVBoxLayout(self.conteudo_scroll)
-        self.layout_lista.setContentsMargins(0, 5, 0, 5)
-        dispositivos = ["Geladeira", "Iluminação Sala", "Roteador Internet", "Ar-Condicionado", "Bomba D'água", "Computador"]
+        # Estado interno: True = Ligado, False = Desligado pelo gerenciamento inteligente
+        self.estados = {nome: True for nome in self.cargas}
         
-        for nome in dispositivos:
-            lbl_item = QLabel(f"{nome}")
-            lbl_item.setStyleSheet("""
-                QLabel { 
-                    background-color: #2D2D2D; 
-                    padding: 12px; 
-                    border-radius: 4px; 
-                    border: 1px solid #444444;
-                    font-size: 12px;
-                    font-weight: 500;
-                }
-                QLabel:hover {
-                    background-color: #353535;
-                    border: 1px solid #FBC02D;
-                }
-            """)
-            lbl_item.setAlignment(Qt.AlignCenter)
-            self.layout_lista.addWidget(lbl_item)
+        for nome, info in self.cargas.items():
+            layout.addWidget(info["botao"])
+            # Estilo inicial de ligado
+            self.atualizar_estilo_botao(nome)
             
-        self.scroll_area.setWidget(self.conteudo_scroll)
-        self.layout_principal.addWidget(self.scroll_area)
+    def obter_estados(self):
+        return self.estados
+        
+    def definir_estado_carga(self, nome, ligado):
+        if nome in self.estados:
+            self.estados[nome] = ligado
+            self.atualizar_estilo_botao(nome)
+            
+    def atualizar_estilo_botao(self, nome):
+        botao = self.cargas[nome]["botao"]
+        prefixo = "[CRÍTICA]" if self.cargas[nome]["critica"] else "[SISTEMA]"
+        
+        if self.estados[nome]:
+            botao.setText(f"🟢 {prefixo} {nome} - Ativo")
+            botao.setStyleSheet("background-color: #2D2D2D; color: #FFFFFF; border: 1px solid #444444;")
+        else:
+            botao.setText(f"🔴 ⚠️ {prefixo} {nome} - DESLIGADO (Corte de Pico)")
+            botao.setStyleSheet("background-color: #3a1c1c; color: #E53935; border: 1px solid #E53935; font-weight: bold;")
