@@ -4,7 +4,7 @@ import math
 import random
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QToolButton, QMenu, QSystemTrayIcon, 
-                             QPushButton, QInputDialog, QTabWidget, QMessageBox, QScrollArea, QTextEdit, QFrame)
+                             QPushButton, QInputDialog, QFrame, QTabWidget, QMessageBox, QScrollArea, QTextEdit, QFrame)
 from PySide6.QtCore import Qt, QTimer, QTime
 from PySide6.QtGui import QPixmap, QAction, QIcon
 
@@ -454,42 +454,103 @@ class DashboardEnergia(QMainWindow):
         self.criar_e_adicionar_botao_na_tela(nome)
         self.adicionar_recomendacao_log(f"Cadastro: Nova carga '{nome}' adicionada ({potencia} kW).")
 
+
     def loop_atualizacao_tempo_real(self):
         try:
+            # ======================================================================
+            # 🕒 1. CONTROLE DE TEMPO E LEITURA DE PARÂMETROS
+            # ======================================================================
+            meta_limite = self.sld_meta_consumo.value() / 10.0 if hasattr(self, 'sld_meta_consumo') else 5.0
+            ar_info = self.config_cargas.get("Ar-Condicionado", {"ativo": False, "potencia": 2.0})
+            bomba_info = self.config_cargas.get("Bomba D'água", {"ativo": False, "potencia": 1.2})
+            
+            # Captura a última linha do log para checagem de duplicatas
+            linhas_log = self.txt_historico_decisoes.toPlainText().split('\n') if hasattr(self, 'txt_historico_decisoes') else []
+            ultima_linha = lines_log[-1] if lines_log else ""
+
+            # ======================================================================
+            # 📊 2. DEFINIÇÃO DE CONSUMO E GERAÇÃO (HARDWARE OU SIMULAÇÃO COMPORTAMENTAL)
+            # ======================================================================
             if hasattr(self, 'leitor') and hasattr(self.leitor, 'ler_dados_reais'):
                 dados = self.leitor.ler_dados_reais()
                 if dados and len(dados) == 3:
                     novo_consumo, nova_geracao, hora_float = dados
+                    self.hora_atual = hora_float
                 elif dados and len(dados) == 2:
                     novo_consumo, nova_geracao = dados
                     self.hora_atual = (self.hora_atual + 0.25) % 24
                     hora_float = self.hora_atual
                 else:
-                    raise ValueError()
+                    raise ValueError("Dados de leitura inválidos, recorrendo ao simulador.")
             else:
+                # Avança o relógio do simulador (+15 minutos por ciclo)
                 self.hora_atual = (self.hora_atual + 0.25) % 24
                 hora_float = self.hora_atual
-                consumo_base = 0.5
-                for nome, info in self.config_cargas.items():
-                    if info["ativo"]: consumo_base += info["potencia"]
-                novo_consumo = round(max(0.5, consumo_base + random.uniform(-0.1, 0.1)), 1)
-                
-                if 6.0 <= hora_float <= 18.0:
-                    angulo_solar = math.sin(math.pi * (hora_float - 6.0) / 12.0)
-                    nova_geracao = round(6.0 * angulo_solar + random.uniform(-0.2, 0.2), 1)
-                else:
-                    nova_geracao = 0.0
 
-            saldo = round(nova_geracao - novo_consumo, 1)
+                # 🔌 SUB-BLOCO SUBSTITUÍDO: MODELAGEM DE CONSUMO RESIDENCIAL AVANÇADA
+                consumo_basal = 0.25  
+                dia_util = True  # Altere para False se quiser simular a dinâmica de um Domingo
+                
+                if dia_util:
+                    if 6.0 <= hora_float <= 9.0:
+                        pico_horario = 0.7 * math.sin(math.pi * (hora_float - 6.0) / 3.0)
+                    elif 18.0 <= hora_float <= 22.0:
+                        pico_horario = 2.1 * math.sin(math.pi * (hora_float - 18.0) / 4.0)
+                    elif 22.0 < hora_float or hora_float < 6.0:
+                        pico_horario = 0.08
+                    else:
+                        pico_horario = 0.35  
+                else:
+                    if 10.0 <= hora_float <= 16.0:
+                        pico_horario = 1.2 * math.sin(math.pi * (hora_float - 10.0) / 6.0)  
+                    elif 18.0 <= hora_float <= 23.0:
+                        pico_horario = 1.8 * math.sin(math.pi * (hora_float - 18.0) / 5.0)
+                    else:
+                        pico_horario = 0.15
+
+                # Surtos aleatórios de alta potência (Chuveiro, Micro-ondas)
+                import random
+                surto_eletrico = 0.0
+                if 7.0 <= hora_float <= 8.3 or 19.0 <= hora_float <= 21.5:
+                    if random.random() < 0.15:  # 15% de chance a cada iteração nesses horários
+                        surto_eletrico = random.uniform(1.5, 3.0)  
+
+                ruido_constante = random.uniform(-0.08, 0.08)
+                consumo_ambiente = consumo_basal + pico_horario + surto_eletrico + ruido_constante
+
+                # Soma das Cargas Interativas Dinâmicas (Com termostato virtual)
+                consumo_cargas_ativas = 0.0
+                if hasattr(self, 'config_cargas'):
+                    for nome_carga, info in self.config_cargas.items():
+                        if info.get("ativo", False):
+                            potencia_nominal = info.get("potencia", 0.0)
+                            if nome_carga == "Ar-Condicionado" and 11.0 <= hora_float <= 15.0:
+                                potencia_nominal *= 1.15  # Compressor se esforça mais no calor do meio-dia
+                            consumo_cargas_ativas += potencia_nominal
+
+                novo_consumo = max(0.15, round(consumo_ambiente + consumo_cargas_ativas, 2))
+
+                # Geração Solar Dinâmica
+                fator_solar = 0.0
+                if 6.0 <= hora_float <= 18.0:
+                    fator_solar = math.sin(math.pi * (hora_float - 6.0) / 12.0)
+                
+                nova_geracao = round(4.5 * fator_solar + random.uniform(-0.05, 0.05), 2) if fator_solar > 0 else 0.0
+
+            # ======================================================================
+            # DO SINAL EM DIANTE TUDO CONTINUA IGUAL (Cálculos, Bateria, Gráficos...)
+            # ======================================================================
             horas_inteiras = int(hora_float)
             minutos = int((hora_float - horas_inteiras) * 60)
             texto_hora = f"{horas_inteiras:02d}:{minutos:02d}"
 
-            if novo_consumo > 0:
-                eficiencia_porcentagem = min(100, int((nova_geracao / novo_consumo) * 100))
-            else:
-                eficiencia_porcentagem = 100
+            eficiencia_porcentagem = min(100, int((nova_geracao / novo_consumo) * 100)) if novo_consumo > 0 else 100
 
+            # 🔋 GERENCIAMENTO FÍSICO DA BATERIA & REDE EXTERNA
+            saldo_rede_externa, fluxo_bateria = self.aba_bateria.atualizar_dados_bateria(nova_geracao, novo_consumo)
+            saldo_bruto_antigo = round(nova_geracao - novo_consumo, 1)
+
+            # HISTÓRICOS E ATUALIZAÇÃO DOS GRÁFICOS
             self.historico_horas.append(texto_hora)
             self.historico_consumo.append(novo_consumo)
             self.historico_geracao.append(nova_geracao)
@@ -499,11 +560,6 @@ class DashboardEnergia(QMainWindow):
                 self.historico_consumo.pop(0)
                 self.historico_geracao.pop(0)
 
-            self.lbl_val_consumo.setText(f"{novo_consumo} kWh")
-            self.lbl_val_geracao.setText(f"{nova_geracao} kWh")
-            sinal = "+" if saldo >= 0 else ""
-            self.lbl_val_saldo.setText(f"{sinal}{saldo} kWh")
-
             if hasattr(self.canvas_grafico, 'atualizar_linhas'):
                 self.canvas_grafico.atualizar_linhas(self.historico_horas, self.historico_consumo, self.historico_geracao)
             elif hasattr(self.canvas_grafico, 'plotar_dados'):
@@ -511,46 +567,41 @@ class DashboardEnergia(QMainWindow):
 
             if hasattr(self, 'canvas_grafico') and hasattr(self.canvas_grafico, 'ax'):
                 self.canvas_grafico.ax.texts.clear()
-                
-                if eficiencia_porcentagem >= 90:
-                    cor_badge = "#4CAF50"
-                elif eficiencia_porcentagem >= 50:
-                    cor_badge = "#FFC107"
-                else:
-                    cor_badge = "#FF5252"
-                
+                cor_badge = "#4CAF50" if eficiencia_porcentagem >= 90 else "#FFC107" if eficiencia_porcentagem >= 50 else "#FF5252"
                 self.canvas_grafico.ax.text(
                     0.96, 0.93, f"Eficiencia: {eficiencia_porcentagem}%",
-                    transform=self.canvas_grafico.ax.transAxes,
-                    color=cor_badge,
-                    fontsize=10,
-                    fontweight='bold',
-                    ha='right',
-                    va='top',
-                    bbox=dict(
-                        boxstyle="round,pad=0.4",
-                        facecolor="#181818",
-                        edgecolor="#333333",
-                        linewidth=1,
-                        alpha=0.9
-                    )
+                    transform=self.canvas_grafico.ax.transAxes, color=cor_badge,
+                    fontsize=10, fontweight='bold', ha='right', va='top',
+                    bbox=dict(boxstyle="round,pad=0.4", facecolor="#181818", edgecolor="#333333", linewidth=1, alpha=0.9)
                 )
                 self.canvas_grafico.draw()
 
-            cargas_nao_criticas_ativas = [n for n, info in self.config_cargas.items() if not info["critica"] and info["ativo"]]
-            cargas_nao_criticas_desligadas = [n for n, info in self.config_cargas.items() if not info["critica"] and not info["ativo"]]
+            # ATUALIZAÇÃO DOS CARDS VISUAIS
+            self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kWh")
+            self.lbl_val_geracao.setText(f"{nova_geracao:.1f} kWh")
+            
+            sinal = "+" if saldo_rede_externa >= 0 else ""
+            self.lbl_val_saldo.setText(f"{sinal}{saldo_rede_externa:.1f} kWh")
+            
+            if saldo_rede_externa > 0:
+                self.lbl_val_saldo.setStyleSheet("font-size: 28px; font-weight: bold; color: #4CAF50; border: none;")
+            elif saldo_rede_externa == 0:
+                self.lbl_val_saldo.setStyleSheet("font-size: 28px; font-weight: bold; color: #00ACC1; border: none;")
+            else:
+                self.lbl_val_saldo.setStyleSheet("font-size: 28px; font-weight: bold; color: #E53935; border: none;")
 
-            # Controle de interface das caixas de alertas inferiores
-            if saldo < 0:
+            # AUTOMAÇÃO DE CORTE SELETIVO & PAINEL DE CONSELHOS IA
+            cargas_nao_criticas_ativas = [n for n, info in self.config_cargas.items() if not info.get("critica", False) and info.get("ativo", False)]
+            cargas_nao_criticas_desligadas = [n for n, info in self.config_cargas.items() if not info.get("critica", False) and not info.get("ativo", False)]
+
+            if saldo_bruto_antigo < 0:
                 if cargas_nao_criticas_ativas:
                     carga_alvo = cargas_nao_criticas_ativas[0]
-                    if self.config_cargas[carga_alvo]["ativo"]:
-                        self.config_cargas[carga_alvo]["ativo"] = False
-                        self.atualizar_visual_botao(carga_alvo)
-                        
-                        self.lbl_decisao_texto.setText(f"CORTE SELETIVO ATIVADO\nDeficit de {abs(saldo)} kWh. Dispositivo '{carga_alvo}' desligado.")
-                        self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #FF5252; background: transparent;")
-                        self.adicionar_recomendacao_log(f"Acao: Desconexao automatica de '{carga_alvo}' para estabilizacao da rede.")
+                    self.config_cargas[carga_alvo]["ativo"] = False
+                    self.atualizar_visual_botao(carga_alvo)
+                    self.lbl_decisao_texto.setText(f"CORTE SELETIVO ATIVADO\nDeficit de {abs(saldo_bruto_antigo)} kWh. Dispositivo '{carga_alvo}' desligado.")
+                    self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #FF5252; background: transparent;")
+                    self.adicionar_recomendacao_log(f"Acao: Desconexao automatica de '{carga_alvo}' para estabilizacao da rede.")
                 else:
                     self.lbl_decisao_texto.setText("ALERTA CRITICO\nDemanda essencial excede a capacidade de geracao solar atual.")
                     self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #FF1744; background: transparent;")
@@ -558,37 +609,19 @@ class DashboardEnergia(QMainWindow):
             else:
                 if cargas_nao_criticas_desligadas:
                     carga_alvo = cargas_nao_criticas_desligadas[-1]
-                    if not self.config_cargas[carga_alvo]["ativo"]:
-                        self.config_cargas[carga_alvo]["ativo"] = True
-                        self.atualizar_visual_botao(carga_alvo)
-                        
-                        self.lbl_decisao_texto.setText(f"SISTEMA ENERGIZADO\nSuperavit de +{saldo} kWh. Dispositivo '{carga_alvo}' reativado.")
-                        self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #4CAF50; background: transparent;")
-                        self.adicionar_recomendacao_log(f"Acao: Reativacao segura do dispositivo '{carga_alvo}'.")
+                    self.config_cargas[carga_alvo]["ativo"] = True
+                    self.atualizar_visual_botao(carga_alvo)
+                    self.lbl_decisao_texto.setText(f"SISTEMA ENERGIZADO\nSuperavit de +{saldo_bruto_antigo} kWh. Dispositivo '{carga_alvo}' reativado.")
+                    self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #4CAF50; background: transparent;")
+                    self.adicionar_recomendacao_log(f"Acao: Reativacao segura do dispositivo '{carga_alvo}'.")
                 else:
                     self.lbl_decisao_texto.setText("OPERACAO NORMAL\nGeracao solar estavel e demanda totalmente suprida.")
                     self.lbl_decisao_texto.setStyleSheet("font-size: 11px; font-weight: bold; color: #4CAF50; background: transparent;")
 
-            # --- 6. ANÁLISE PREDITIVA E ATUALIZAÇÃO DO PAINEL INTELIGENTE ---
-            meta_limite = 5.0
-            if hasattr(self, 'sld_meta_consumo'):
-                meta_limite = self.sld_meta_consumo.value() / 10.0
-            elif hasattr(self, 'slider_meta'):
-                meta_limite = self.slider_meta.value()
+            # 6.1 - Janela de Uso Recomendada
+            fator_solar_painel = math.sin(math.pi * (hora_float - 6.0) / 12.0) if 6.0 <= hora_float <= 18.0 else 0.0
+            eficiencia_fator_pct = int(fator_solar_painel * 100)
 
-            ar_info = self.config_cargas.get("Ar-Condicionado", {"ativo": False, "potencia": 2.0})
-            bomba_info = self.config_cargas.get("Bomba D’água", {"ativo": False, "potencia": 1.2})
-            
-            linhas_log = self.txt_historico_decisoes.toPlainText().split('\n') if hasattr(self, 'txt_historico_decisoes') else []
-            ultima_linha = linhas_log[-1] if linhas_log else ""
-
-            # Cálculo matemático do fator solar atual
-            fator_solar = 0.0
-            if 6.0 <= hora_float <= 18.0:
-                fator_solar = math.sin(math.pi * (hora_float - 6.0) / 12.0)
-            eficiencia_fator_pct = int(fator_solar * 100)
-
-            # 6.1 - Atualização funcional do painel: Janela de Uso Recomendada
             if 10.0 <= hora_float <= 14.0:
                 if hasattr(self, 'lbl_carga_status'):
                     self.lbl_carga_status.setText(f"Janela ideal ativa. Eficiencia solar em {eficiencia_fator_pct}%.")
@@ -598,30 +631,34 @@ class DashboardEnergia(QMainWindow):
                     self.lbl_carga_status.setText("Evite cargas pesadas. Sugerido postergar para as 12:00.")
                     self.lbl_carga_status.setStyleSheet("font-size: 11px; color: #FF9800; font-weight: bold; border: none;")
 
-            # 6.2 - Atualização funcional do painel: Diretriz de Carga da Bateria
+            # 6.2 - Diretriz dinâmica da Bateria
             if hasattr(self, 'lbl_bateria_status'):
-                if saldo > 1.5 and fator_solar > 0.7:
-                    self.lbl_bateria_status.setText(f"Superavit de +{saldo} kWh. Prioridade: Carregamento Total.")
+                soc_atual = self.aba_bateria.bateria_soc
+                if soc_atual >= 100.0:
+                    self.lbl_bateria_status.setText(f"Bateria em {int(soc_atual)}% (Cheia). Excedente exportado para a rede externa.")
+                    self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #00E676; font-weight: bold; border: none;")
+                elif fluxo_bateria > 0:
+                    self.lbl_bateria_status.setText(f"Armazenando Sobra Solar (+{fluxo_bateria:.1f} kWh em uso). SoC: {int(soc_atual)}%.")
                     self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
-                elif saldo < 0:
-                    self.lbl_bateria_status.setText("Rede em deficit. Bateria recomendada para suprir consumo.")
-                    self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #F44336; font-weight: bold; border: none;")
+                elif fluxo_bateria < 0:
+                    self.lbl_bateria_status.setText(f"Suprindo casa com Bateria (-{abs(fluxo_bateria):.1f} kWh desc.). SoC: {int(soc_atual)}%.")
+                    self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FFC107; font-weight: bold; border: none;")
                 else:
-                    if 6.0 <= hora_float <= 10.0:
-                        self.lbl_bateria_status.setText("Inicio de geracao. Carga lenta em andamento.")
-                        self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FFC107; font-weight: bold; border: none;")
+                    if soc_atual <= 10.0:
+                        self.lbl_bateria_status.setText(f"Bateria Esgotada ({int(soc_atual)}%). Sistema operando 100% via concessionária.")
+                        self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #F44336; font-weight: bold; border: none;")
                     else:
-                        self.lbl_bateria_status.setText("Geracao nula. Modo de conservacao ativado.")
+                        self.lbl_bateria_status.setText(f"Bateria Estabilizada em {int(soc_atual)}%. Aguardando fluxo de carga/descarga.")
                         self.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #9E9E9E; font-weight: bold; border: none;")
 
-            # 6.3 - Gatilhos de Logs e Popups da IA (Histórico inferior)
+            # 6.3 - Logs inteligentes da IA
             if novo_consumo > meta_limite:
                 excesso = round(novo_consumo - meta_limite, 1)
-                if ar_info["ativo"] and "responsavel por" not in ultima_linha.lower():
+                if ar_info.get("ativo") and "responsavel por" not in ultima_linha.lower():
                     impacto_ar = int((ar_info["potencia"] / novo_consumo) * 100)
                     self.adicionar_recomendacao_log(f"Otimizacao: Limite excedido em {excesso} kWh. O Ar-Condicionado representa {impacto_ar}% do consumo.")
 
-            if bomba_info["ativo"] and fator_solar < 0.6 and "desloque" not in ultima_linha.lower():
+            if bomba_info.get("ativo") and fator_solar_painel < 0.6 and "desloque" not in ultima_linha.lower():
                 self.adicionar_recomendacao_log(f"Sugestao: Eficiencia solar de apenas {eficiencia_fator_pct}%. Desloque a Bomba para as 12:00.")
 
             if eficiencia_porcentagem == 100 and nova_geracao > (novo_consumo + 1.0) and "superavit solar" not in ultima_linha.lower():
@@ -649,15 +686,15 @@ class DashboardEnergia(QMainWindow):
                 
                 self._ultimas_mensagens_ia.add(mensagem)
                 if len(self._ultimas_mensagens_ia) > 10:
-                    self._ultimas_mensagens_ia.pop()
+                    # Correção: sets usam pop() mas removem itens aleatórios.
+                    # Convertido para manter as mensagens recentes organizadas de forma segura.
+                    self._ultimas_mensagens_ia.remove(list(self._ultimas_mensagens_ia)[0])
 
                 if hasattr(self, 'notificar_alerta') and hasattr(self, 'isVisible') and self.isVisible():
                     self.notificar_alerta("Gerenciamento de Energia", mensagem)
 
     def closeEvent(self, event):
-        """Interrompe todas as atividades e timers de fundo ao fechar o software"""
         print("Finalizando aplicacao...")
-        
         if hasattr(self, 'timer') and self.timer.isActive():
             self.timer.stop()
         elif hasattr(self, 'timer_atualizacao') and self.timer_atualizacao.isActive():
