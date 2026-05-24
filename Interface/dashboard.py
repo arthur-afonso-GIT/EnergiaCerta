@@ -14,9 +14,12 @@ from leitor import LeitorHardware
 from Interface.componentes.painel_bateria import PainelBateria
 from PySide6.QtWidgets import QTabWidget 
 
-class DashboardEnergia(QMainWindow):
-    def __init__(self):
-        super().__init__()
+class DashboardEnergia(QMainWindow): 
+    def __init__(self, aba_cargas=None, parent=None):
+        super().__init__(parent)
+        
+        # 🔗 SALVANDO A REFERÊNCIA: Agora o loop em tempo real vai conseguir acessar os botões!
+        self.aba_cargas = aba_cargas
         
         self.leitor = LeitorHardware(porta='COM3')
         self.setWindowTitle("Energia Certa - Dashboard Principal")
@@ -466,8 +469,7 @@ class DashboardEnergia(QMainWindow):
             
             # Captura a última linha do log para checagem de duplicatas
             linhas_log = self.txt_historico_decisoes.toPlainText().split('\n') if hasattr(self, 'txt_historico_decisoes') else []
-            ultima_linha = lines_log[-1] if lines_log else ""
-
+            ultima_linha = linhas_log[-1] if linhas_log else ""
             # ======================================================================
             # 📊 2. DEFINIÇÃO DE CONSUMO E GERAÇÃO (HARDWARE OU SIMULAÇÃO COMPORTAMENTAL)
             # ======================================================================
