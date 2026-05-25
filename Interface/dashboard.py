@@ -51,14 +51,15 @@ class DashboardEnergia(QMainWindow):
         # Otimização: Uso de deque com maxlen garante controle de memória cronológico rígido
         self._ultimas_mensagens_ia = deque(maxlen=10)
         
-        # 🧠 Base de Dados Inicializada das Cargas Residenciais
+        # 🧠 Base de Dados Inicializada com Prioridades Padrão (Alteráveis pelo Usuário)
+        # Prioridade: 1 = Cai Primeiro, 3 = Segura mais tempo ligado antes de cair
         self.config_cargas = {
-            "Geladeira": {"critica": True, "potencia": 0.8, "ativo": True, "btn": None},
-            "Iluminação Sala": {"critica": True, "potencia": 0.3, "ativo": True, "btn": None},
-            "Roteador Internet": {"critica": True, "potencia": 0.1, "ativo": True, "btn": None},
-            "Ar-Condicionado": {"critica": False, "potencia": 2.0, "ativo": True, "btn": None},
-            "Bomba D'água": {"critica": False, "potencia": 1.2, "ativo": True, "btn": None},
-            "Computador": {"critica": False, "potencia": 0.5, "ativo": True, "btn": None}
+            "Geladeira": {"critica": True, "potencia": 0.8, "ativo": True, "btn": None, "prioridade": 3},
+            "Iluminação Sala": {"critica": True, "potencia": 0.3, "ativo": True, "btn": None, "prioridade": 3},
+            "Roteador Internet": {"critica": True, "potencia": 0.1, "ativo": True, "btn": None, "prioridade": 3},
+            "Bomba D'água": {"critica": False, "potencia": 1.2, "ativo": True, "btn": None, "prioridade": 1},
+            "Computador": {"critica": False, "potencia": 0.5, "ativo": True, "btn": None, "prioridade": 2},
+            "Ar-Condicionado": {"critica": False, "potencia": 2.0, "ativo": True, "btn": None, "prioridade": 3}
         }
         
         # ======================================================================
@@ -284,12 +285,14 @@ class DashboardEnergia(QMainWindow):
                 self.txt_historico_decisoes.ensureCursorVisible()
                 self._ultimas_mensagens_ia.append(mensagem)
                 
+                # 🔔 SISTEMA DE NOTIFICAÇÕES CORRIGIDO (Sem 'message' em inglês)
                 if hasattr(self, 'notificar_alerta'):
-                    if any(x in mensagem for x in ["🚨", "⚠️", "Decisão"]):
-                        self.notificar_alerta("IA: Gerenciamento Ativo", message=mensagem)
+                    if any(x in mensagem for x in ["🚨", "⚠️", "Decisão", "Configuração"]):
+                        self.notificar_alerta("IA: Gerenciamento Ativo", mensagem)
                     elif any(x in mensagem for x in ["💡", "Sugestão"]):
-                        self.notificar_alerta("IA: Sugestão de Economia", message=mensagem)
-
+                        self.notificar_alerta("IA: Sugestão de Economia", mensagem)
+                        
+                        
     def closeEvent(self, event):
         print("Finalizando aplicação e liberando recursos...")
         if hasattr(self, 'timer') and self.timer.isActive():
@@ -313,8 +316,8 @@ class DashboardEnergia(QMainWindow):
     def criar_e_adicionar_botao_na_tela(self, nome_carrega):
         btn_novo = QPushButton()
         self.config_cargas[nome_carrega]["btn"] = btn_novo
-        self.atualizar_visual_botao(nome_carrega)
         self.layout_cargas.addWidget(btn_novo)
+        self.atualizar_visual_botao(nome_carrega)
         btn_novo.clicked.connect(lambda: self.abrir_menu_contexto_carga(nome_carrega))
 
     def atualizar_visual_botao(self, nome):
@@ -323,16 +326,21 @@ class DashboardEnergia(QMainWindow):
         if info["btn"] is None: return
         tipo = "[CRÍTICA]" if info["critica"] else "[SELETIVA]"
         pot = info["potencia"]
+        prio = info.get("prioridade", 1)
+        
+        # 🔢 Exibe o nível de prioridade no botão para o usuário ver
+        prio_txt = f" [Prio: {prio}]" if not info["critica"] else ""
         
         if info["ativo"]:
-            info["btn"].setText(f"🟢 {tipo} {nome} ({pot}kW) - Ativo")
+            info["btn"].setText(f"🟢 {tipo}{prio_txt} {nome} ({pot}kW) - Ativo")
             info["btn"].setStyleSheet("background-color: #2D2D2D; color: white; border: 1px solid #444444; padding: 10px; text-align: left; font-size: 11px; border-radius: 4px;")
         else:
-            info["btn"].setText(f"🔴 {tipo} {nome} ({pot}kW) - CORTADO")
+            info["btn"].setText(f"🔴 {tipo}{prio_txt} {nome} ({pot}kW) - CORTADO")
             info["btn"].setStyleSheet("background-color: #3A1C1C; color: #E53935; border: 1px solid #E53935; font-weight: bold; padding: 10px; text-align: left; font-size: 11px; border-radius: 4px;")
 
     def abrir_menu_contexto_carga(self, nome):
         menu = QMenu(self)
+        
         texto_estado = "🔴 Forçar Desligamento" if self.config_cargas[nome]["ativo"] else "🟢 Reativar Aparelho"
         acao_estado = QAction(texto_estado, self)
         acao_estado.triggered.connect(lambda: self.alternar_carga_manual(nome))
@@ -342,12 +350,31 @@ class DashboardEnergia(QMainWindow):
         acao_tipo = QAction(texto_tipo, self)
         acao_tipo.triggered.connect(lambda: self.alternar_tipo_critica(nome))
         menu.addAction(acao_tipo)
+
+        # 🔢 NOVO: Permite alterar a prioridade das cargas seletivas dinamicamente
+        if not self.config_cargas[nome]["critica"]:
+            acao_prioridade = QAction("🔢 Alterar Nível de Prioridade", self)
+            acao_prioridade.triggered.connect(lambda: self.alterar_prioridade_manual(nome))
+            menu.addAction(acao_prioridade)
         
         menu.addSeparator()
         acao_remover = QAction("❌ Excluir do Sistema", self)
         acao_remover.triggered.connect(lambda: self.excluir_carga(nome))
         menu.addAction(acao_remover)
         menu.exec(self.config_cargas[nome]["btn"].mapToGlobal(self.config_cargas[nome]["btn"].rect().bottomLeft()))
+
+    # 🔢 NOVO: Processa a caixa de diálogo de prioridades das cargas existentes
+    def alterar_prioridade_manual(self, nome):
+        prio_atual = self.config_cargas[nome].get("prioridade", 1)
+        nova_prio, ok = QInputDialog.getInt(
+            self, "Alterar Prioridade", 
+            f"Nova prioridade para '{nome}' (1 = Cai Primeiro, 3 = Cai por Último):", 
+            prio_atual, 1, 3, 1
+        )
+        if ok:
+            self.config_cargas[nome]["prioridade"] = nova_prio
+            self.atualizar_visual_botao(nome)
+            self.adicionar_recomendacao_log(f"Configuração: Prioridade de '{nome}' alterada para {nova_prio}.")
 
     def alternar_carga_manual(self, nome):
         self.config_cargas[nome]["ativo"] = not self.config_cargas[nome]["ativo"]
@@ -368,6 +395,7 @@ class DashboardEnergia(QMainWindow):
             del self.config_cargas[nome]
             self.adicionar_recomendacao_log(f"Remoção: Dispositivo '{nome}' excluído do banco do sistema.")
 
+    # 🔢 ATUALIZADO: Cadastro de Novas Cargas perguntando prioridades
     def abrir_dialogo_adicionar_carga(self):
         nome, ok1 = QInputDialog.getText(self, "Nova Carga", "Nome do Aparelho:")
         if not ok1 or not nome.strip(): return
@@ -376,14 +404,27 @@ class DashboardEnergia(QMainWindow):
         potencia, ok2 = QInputDialog.getDouble(self, "Nova Carga", "Potência Absorvida (em kW):", 1.0, 0.1, 15.0, 1)
         if not ok2: return
         
+        prioridade, ok_prio = QInputDialog.getInt(
+            self, "Nova Carga", 
+            "Nível de Prioridade (1 = Cai Primeiro, 3 = Cai por Último):", 
+            1, 1, 3, 1
+        )
+        if not ok_prio: return
+        
         itens = ["Seletiva (Pode ser desligada pelo sistema)", "Crítica (Imune a cortes automáticos)"]
         tipo, ok3 = QInputDialog.getItem(self, "Nova Carga", "Tipo de Gerenciamento:", itens, 0, False)
         if not ok3: return
         
         is_critica = (tipo == "Crítica (Imune a cortes automáticos)")
-        self.config_cargas[nome] = {"critica": is_critica, "potencia": potencia, "ativo": True, "btn": None}
+        self.config_cargas[nome] = {
+            "critica": is_critica, 
+            "potencia": potencia, 
+            "ativo": True, 
+            "btn": None, 
+            "prioridade": prioridade
+        }
         self.criar_e_adicionar_botao_na_tela(nome)
-        self.adicionar_recomendacao_log(f"Cadastro: Nova carga '{nome}' adicionada ({potencia} kW).")
+        self.adicionar_recomendacao_log(f"Cadastro: Nova carga '{nome}' adicionada ({potencia} kW) | Prioridade: {prioridade}.")
 
     def atualizar_status_carga_lateral(self, nome_carga, esta_ativo):
         if nome_carga in self.config_cargas:
@@ -429,54 +470,6 @@ class DashboardEnergia(QMainWindow):
             else:
                 excedente = nova_geracao - novo_consumo
                 fluxo_bateria = round(max(-1.5, min(excedente, 2.0)), 2)
-
-            # 🧠 🚀 [PRODUÇÃO] ALGORITMO DE CORTE DEFINITIVO (HISTERESE ROBUSTA)
-            meta_limite = self.sld_meta_consumo.value() / 10.0  
-            
-            # CRITÉRIO DE CORTE: Geração menor que Consumo OU estourou a meta do Slider
-            if (nova_geracao < novo_consumo or novo_consumo > meta_limite or soc_atual_bateria < 20.0):
-                cargas_seletivas_ativas = [
-                    (nome, info) for nome, info in self.config_cargas.items() 
-                    if not info["critica"] and info["ativo"]
-                ]
-                
-                if cargas_seletivas_ativas:
-                    # Ordena para derrubar a maior carga seletiva ligada primeiro
-                    cargas_seletivas_ativas.sort(key=lambda x: x[1]["potencia"], reverse=True)
-                    alvo_nome, _ = cargas_seletivas_ativas[0]
-                    
-                    self.config_cargas[alvo_nome]["ativo"] = False
-                    self.atualizar_visual_botao(alvo_nome)
-                    self.adicionar_recomendacao_log(f"🚨 CORTE AUTOMÁTICO: Geração insuficiente ({nova_geracao}kW) para Demanda ({novo_consumo}kW). '{alvo_nome}' desligado.")
-                    
-                    if self.aba_cargas and hasattr(self.aba_cargas, 'atualizar_interface_externa'):
-                        self.aba_cargas.atualizar_interface_externa(alvo_nome, False)
-                    
-                    # Recalcula imediatamente a variável local para os KPIs refletirem em tempo de execução
-                    novo_consumo = sum(info["potencia"] for info in self.config_cargas.values() if info.get("ativo", True))
-            
-            # CRITÉRIO DE REATIVAÇÃO INTELIGENTE (Trava contra efeito sanfona)
-            else:
-                cargas_seletivas_cortadas = [
-                    (nome, info) for nome, info in self.config_cargas.items() 
-                    if not info["critica"] and not info["ativo"]
-                ]
-                if cargas_seletivas_cortadas:
-                    cargas_seletivas_cortadas.sort(key=lambda x: x[1]["potencia"])
-                    alvo_nome, info_alvo = cargas_seletivas_cortadas[0]
-                    
-                    # Só tenta ligar se a GERAÇÃO SOLAR atual suportar o consumo antigo somado à nova carga
-                    potencia_necessaria = novo_consumo + info_alvo["potencia"]
-                    
-                    if nova_geracao > (potencia_necessaria + 0.3) and potencia_necessaria <= meta_limite and soc_atual_bateria > 35.0:
-                        self.config_cargas[alvo_nome]["ativo"] = True
-                        self.atualizar_visual_botao(alvo_nome)
-                        self.adicionar_recomendacao_log(f"💡 REATIVAÇÃO AUTOMÁTICA: Margem solar segura detectada. '{alvo_nome}' restabelecido.")
-                        
-                        if self.aba_cargas and hasattr(self.aba_cargas, 'atualizar_interface_externa'):
-                            self.aba_cargas.atualizar_interface_externa(alvo_nome, True)
-                        
-                        novo_consumo = sum(info["potencia"] for info in self.config_cargas.values() if info.get("ativo", True))
 
             # ⚡ 5. CÁLCULO MATEMÁTICO REAL DO SALDO DA REDE EXTERNA
             saldo_rede_externa = round(nova_geracao - novo_consumo - fluxo_bateria, 2)
