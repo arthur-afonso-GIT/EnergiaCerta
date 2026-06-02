@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QApplication
 
 from Interface.dashboard import DashboardEnergia 
 from Core import comunicacao_serial 
-
+from Core.banco_dados import carregar_dados, salvar_dados
 from Interface.abas.aba_cargas import AbaCargas
 from Interface.abas.aba_baterias import AbaBaterias  
 from Interface.abas.aba_ia import AbaIA
@@ -15,6 +15,7 @@ if __name__ == "__main__":
     arduino_serial = comunicacao_serial
     
     janela = DashboardEnergia()
+    janela.config_cargas = carregar_dados()
     
     if hasattr(janela, 'abas') and janela.abas.count() > 1:
         janela.abas.removeTab(1) 
@@ -57,7 +58,7 @@ if __name__ == "__main__":
         for nome_carga, info in janela.config_cargas.items():
             if info["ativo"]:
                 consumo += info["potencia"]
-
+                
         saldo = geracao - consumo
         meta_limite = janela.sld_meta_consumo.value() / 10.0
 
@@ -73,7 +74,6 @@ if __name__ == "__main__":
                     janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FF9800; font-weight: bold; border: none;")
 
             if janela.ciclos_em_defice >= 2:
-                
                 cargas_para_cortar = [
                     (nome, info) for nome, info in janela.config_cargas.items()
                     if not info.get("critica", False) and info.get("ativo", True)
@@ -91,6 +91,9 @@ if __name__ == "__main__":
                     janela.config_cargas[nome_alvo]["ativo"] = False
                     if nome_alvo not in janela.cargas_desligadas_pela_ia:
                         janela.cargas_desligadas_pela_ia.append(nome_alvo)
+                    
+                    # 💾 Salva no JSON imediatamente após o corte da IA
+                    salvar_dados(janela.config_cargas)
                     
                     janela.atualizar_visual_botao(nome_alvo)
                     janela.adicionar_recomendacao_log(f"IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}).")
@@ -131,6 +134,9 @@ if __name__ == "__main__":
                         
                         janela.config_cargas[nome_alvo]["ativo"] = True
                         janela.cargas_desligadas_pela_ia.remove(nome_alvo)
+                        
+                        # 💾 Salva no JSON imediatamente após a IA religar o aparelho
+                        salvar_dados(janela.config_cargas)
                         
                         janela.atualizar_visual_botao(nome_alvo)
                         janela.adicionar_recomendacao_log(f"IA: Restabelecendo '{nome_alvo}'.")

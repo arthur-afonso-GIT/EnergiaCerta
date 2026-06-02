@@ -18,7 +18,7 @@ class CardCarga(QFrame):
         
         self.setObjectName("CardCarga")
         self.setFrameShape(QFrame.StyledPanel)
-        self.setMinimumHeight(180) # Aumentado ligeiramente para acomodar os novos seletores
+        self.setMinimumHeight(180) 
         self.update_card_style()
         
         layout = QVBoxLayout(self)
@@ -42,9 +42,10 @@ class CardCarga(QFrame):
         self.lbl_consumo.setStyleSheet("font-size: 12px; color: #888888; background: transparent; margin-top: 2px;")
         layout.addWidget(self.lbl_consumo)
         
-        # --- ⚙️ NOVO: ÁREA DE CONFIGURAÇÃO DE GERENCIAMENTO DA IA ---
+        # --- ⚙️ ÁREA DE CONFIGURAÇÃO DE GERENCIAMENTO DA IA ---
         config_layout = QHBoxLayout()
-        config_layout.setSpacing(0)        
+        config_layout.setSpacing(10)  # Espaçamento ideal        
+        
         # Checkbox para definir se é imune a cortes (Crítica)
         self.chk_critica = QCheckBox("Crítica")
         self.chk_critica.setChecked(self.eh_critica)
@@ -86,12 +87,17 @@ class CardCarga(QFrame):
         
         # Sincroniza com a memória central do dashboard principal
         if self.aba_pai and self.aba_pai.dashboard_principal:
-            if self.nome in self.aba_pai.dashboard_principal.config_cargas:
-                self.aba_pai.dashboard_principal.config_cargas[self.nome]["critica"] = checked
-                self.aba_pai.dashboard_principal.atualizar_visual_botao(self.nome)
-                self.aba_pai.dashboard_principal.adicionar_recomendacao_log(
+            dash = self.aba_pai.dashboard_principal
+            if self.nome in dash.config_cargas:
+                dash.config_cargas[self.nome]["critica"] = checked
+                dash.atualizar_visual_botao(self.nome)
+                dash.adicionar_recomendacao_log(
                     f"⚙️ Cards: '{self.nome}' reconfigurado como {'CRÍTICA' if checked else 'SELETIVA'}."
                 )
+                
+                # 💾 SALVA NO BANCO DE DADOS JSON
+                from Core.banco_dados import salvar_dados
+                salvar_dados(dash.config_cargas)
 
     def alterar_prioridade_ia(self, index):
         nova_prio = index + 1
@@ -99,12 +105,17 @@ class CardCarga(QFrame):
         
         # Sincroniza com a memória central do dashboard principal
         if self.aba_pai and self.aba_pai.dashboard_principal:
-            if self.nome in self.aba_pai.dashboard_principal.config_cargas:
-                self.aba_pai.dashboard_principal.config_cargas[self.nome]["prioridade"] = nova_prio
-                self.aba_pai.dashboard_principal.atualizar_visual_botao(self.nome)
-                self.aba_pai.dashboard_principal.adicionar_recomendacao_log(
+            dash = self.aba_pai.dashboard_principal
+            if self.nome in dash.config_cargas:
+                dash.config_cargas[self.nome]["prioridade"] = nova_prio
+                dash.atualizar_visual_botao(self.nome)
+                dash.adicionar_recomendacao_log(
                     f"⚙️ Cards: Alterada prioridade de '{self.nome}' para {nova_prio}."
                 )
+                
+                # 💾 SALVA NO BANCO DE DADOS JSON
+                from Core.banco_dados import salvar_dados
+                salvar_dados(dash.config_cargas)
 
     def sincronizar_mudanca_com_sistema(self):
         if self.ativo:
@@ -131,7 +142,14 @@ class CardCarga(QFrame):
             
         # Sincroniza direto o estado booleano com a tela principal
         if self.aba_pai and self.aba_pai.dashboard_principal:
-            self.aba_pai.dashboard_principal.atualizar_status_carga_lateral(self.nome, self.ativo)
+            dash = self.aba_pai.dashboard_principal
+            dash.atualizar_status_carga_lateral(self.nome, self.ativo)
+            
+            # 💾 SALVA NO BANCO DE DADOS JSON (Mudança manual de ligar/desligar)
+            if self.nome in dash.config_cargas:
+                dash.config_cargas[self.nome]["ativo"] = self.ativo
+                from Core.banco_dados import salvar_dados
+                salvar_dados(dash.config_cargas)
 
     def update_card_style(self):
         borda_cor = "#00E676" if self.ativo else "#2D2D2D"
@@ -187,7 +205,7 @@ class JanelaAdicionarCarga(QDialog):
         self.btn_salvar.clicked.connect(self.accept)
         layout.addWidget(self.btn_salvar)
 
-    def obtener_dados(self):
+    def obter_dados(self):
         return (
             self.txt_nome.text().strip(),
             self.txt_consumo.value(),
@@ -212,12 +230,10 @@ class AbaCargas(QWidget):
             if hasattr(arduino_serial, 'enviar_dados'): self.callback_envio = arduino_serial.enviar_dados
             elif hasattr(arduino_serial, 'write'): self.callback_envio = arduino_serial.write
 
-        # Layout Principal
         layout_principal = QVBoxLayout(self)
         layout_principal.setContentsMargins(25, 25, 25, 25)
         layout_principal.setSpacing(20)
         
-        # Painel Superior
         topo_painel = QHBoxLayout()
         self.titulo = QLabel("⚙️ Gerenciamento Distribuído de Cargas")
         self.titulo.setStyleSheet("font-size: 20px; font-weight: bold; color: #00E676; background: transparent;")
@@ -234,36 +250,26 @@ class AbaCargas(QWidget):
         topo_painel.addWidget(self.btn_nova_carga)
         layout_principal.addLayout(topo_painel)
         
-        # Grade de Cards
         self.grid_cargas = QGridLayout()
         self.grid_cargas.setSpacing(20)
         layout_principal.addLayout(self.grid_cargas)
         layout_principal.addStretch()
         
-        # 🔄 Renderização dinâmica com sincronização centralizada
         self.sincronizar_com_monitoramento_geral()
 
     def sincronizar_com_monitoramento_geral(self):
         """Limpa a grade e recria os cards baseando-se no dicionário unificado do Dashboard"""
-        # Limpa os componentes antigos para evitar vazamento de memória gráfica
         for card in self.lista_cards:
             self.grid_cargas.removeWidget(card)
             card.deleteLater()
         self.lista_cards.clear()
         
-        # Pega a base de dados dinâmica da tela principal. Caso não exista, assume o fallback padrão.
         if self.dashboard_principal and hasattr(self.dashboard_principal, 'config_cargas'):
             dados_cargas = self.dashboard_principal.config_cargas.items()
         else:
-            # Fallback seguro estruturado com prioridades iniciais coerentes
-            dados_cargas = {
-                "Geladeira": {"critica": True, "potencia": 0.8, "ativo": True, "prioridade": 1},
-                "Iluminação Sala": {"critica": True, "potencia": 0.3, "ativo": True, "prioridade": 1},
-                "Roteador Internet": {"critica": True, "potencia": 0.1, "ativo": True, "prioridade": 1},
-                "Ar-Condicionado": {"critica": False, "potencia": 2.0, "ativo": True, "prioridade": 1},
-                "Bomba D'água": {"critica": False, "potencia": 1.2, "ativo": True, "prioridade": 3},
-                "Computador": {"critica": False, "potencia": 0.5, "ativo": True, "prioridade": 2}
-            }.items()
+            # Fallback seguro caso o componente rode isolado
+            from Core.banco_dados import carregar_dados
+            dados_cargas = carregar_dados().items()
             
         for nome, info in dados_cargas:
             novo_card = CardCarga(
@@ -276,7 +282,6 @@ class AbaCargas(QWidget):
                 aba_pai=self
             )
             
-            # Sincroniza o estado de ativação atualizado da memória
             novo_card.ativo = info.get("ativo", True)
             if not novo_card.ativo:
                 novo_card.lbl_status_led.setText("● DESLIGADO")
@@ -286,14 +291,12 @@ class AbaCargas(QWidget):
                 
             self.lista_cards.append(novo_card)
             
-            # Reposicionamento matemático na matriz de 3 colunas
             posicao = len(self.lista_cards) - 1
             linha = posicao // 3
             coluna = posicao % 3
             self.grid_cargas.addWidget(novo_card, linha, coluna)
 
     def atualizar_interface_externa(self, nome_carga, devera_ativar):
-        """Método invocado pelo loop externo do main.py para forçar o card a mudar de cor na tela se a IA cortar"""
         for card in self.lista_cards:
             if card.nome == nome_carga:
                 card.ativo = devera_ativar
@@ -310,7 +313,6 @@ class AbaCargas(QWidget):
         if formulario.exec() == QDialog.Accepted:
             nome, consumo, prioridade, eh_critica = formulario.obter_dados()
             
-            # Se a janela principal existir, adiciona na memória compartilhada global
             if self.dashboard_principal and hasattr(self.dashboard_principal, 'config_cargas'):
                 self.dashboard_principal.config_cargas[nome] = {
                     "critica": eh_critica,
@@ -319,9 +321,12 @@ class AbaCargas(QWidget):
                     "btn": None,
                     "prioridade": prioridade
                 }
-                # Cria o botão lá na barra lateral do dashboard
+                
+                # 💾 SALVA A NOVA CARGA ADICIONADA NO ARQUIVO JSON
+                from Core.banco_dados import salvar_dados
+                salvar_dados(self.dashboard_principal.config_cargas)
+                
                 self.dashboard_principal.criar_e_adicionar_botao_na_tela(nome)
                 self.dashboard_principal.adicionar_recomendacao_log(f"➕ Cards: Novo dispositivo '{nome}' integrado via painel secundário.")
             
-            # Atualiza a grade local de cards para renderizar o novo elemento
             self.sincronizar_com_monitoramento_geral()
