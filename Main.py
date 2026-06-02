@@ -1,11 +1,9 @@
 import sys
 from PySide6.QtWidgets import QApplication
 
-# 1. Imports estruturados do Core e do Dashboard principal
 from Interface.dashboard import DashboardEnergia 
 from Core import comunicacao_serial 
 
-# 2. Importando as abas da pasta modular
 from Interface.abas.aba_cargas import AbaCargas
 from Interface.abas.aba_baterias import AbaBaterias  
 from Interface.abas.aba_ia import AbaIA
@@ -14,35 +12,26 @@ from Interface.abas.aba_graficos import AbaGraficos
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     
-    # 🔌 Conexão Serial (Arduino)
     arduino_serial = comunicacao_serial
     
-    # ⚙️ Inicializa o Dashboard base primeiro
     janela = DashboardEnergia()
-
-    # 🛑 RESOLVE O DUPLO BOTÃO: Remove a aba estática/velha gerada pelo dashboard.py
+    
     if hasattr(janela, 'abas') and janela.abas.count() > 1:
         janela.abas.removeTab(1) 
 
-    # ⚙️ Instancia as abas passando as referências corretas
     tela_cargas = AbaCargas(arduino_serial=arduino_serial, dashboard_principal=janela)
     tela_baterias = AbaBaterias()  
     tela_ia = AbaIA()
     tela_graficos = AbaGraficos()
     
-    # 🧬 CRÍTICO: Resolve o erro do loop de simulação que procura 'aba_bateria' no dashboard!
     janela.aba_bateria = tela_baterias
-
-    # 🧠 CONTROLE INTELIGENTE: VARIÁVEIS DE ESTADO DA IA
+    
     janela.ciclos_em_defice = 0 
     janela.cargas_desligadas_pela_ia = [] 
 
     def executar_algoritmo_cortes_ia():
-        """
-        Analisa o fluxo energético em tempo real, gerencia a bateria,
-        desliga cargas seletivas no défice e as religa na sobra de energia.
-        """
-        # 1. Captura Geração Solar dos Cards do Dashboard de forma segura
+        """Gerencia cortes inteligentes de cargas com base em prioridades."""
+        
         geracao = 0.0
         if hasattr(janela, 'lbl_val_geracao'):
             try:
@@ -50,7 +39,6 @@ if __name__ == "__main__":
             except ValueError:
                 geracao = 0.0
 
-        # 2. Captura o SOC (Carga) da Bateria de forma dinâmica
         soc_bateria = 100.0
         if hasattr(tela_baterias, 'lbl_soc_valor'): 
             try:
@@ -65,114 +53,47 @@ if __name__ == "__main__":
             except Exception:
                 pass
 
-        # 3. Calcula Consumo Atual baseado na lista unificada de cargas da janela principal
         consumo = 0.0
         for nome_carga, info in janela.config_cargas.items():
             if info["ativo"]:
                 consumo += info["potencia"]
 
         saldo = geracao - consumo
-        meta_limite = janela.sld_meta_consumo.value() / 10.0  # Captura o slider dinâmico do dashboard
+        meta_limite = janela.sld_meta_consumo.value() / 10.0
 
-       # --- [CORREÇÃO] LÓGICA DE CORTES (INTEGRADA COM PRIORIDADES DINÂMICAS) ---
         if saldo < 0 or consumo > meta_limite or soc_bateria < 30.0:
             janela.ciclos_em_defice += 1
             
-            # Atualização visual do status do painel informativo lateral direito
             if hasattr(janela, 'lbl_bateria_status'):
                 if soc_bateria <= 30.0:
-                    janela.lbl_bateria_status.setText(f"⚠️ Bateria Crítica ({soc_bateria:.1f}%)! Cortando Cargas...")
+                    janela.lbl_bateria_status.setText(f"Bateria Crítica ({soc_bateria:.1f}%)! Cortando Cargas...")
                     janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #E53935; font-weight: bold; border: none;")
                 else:
-                    janela.lbl_bateria_status.setText(f"⚠️ Défice Detectado! Geração: {geracao:.1f}kW")
+                    janela.lbl_bateria_status.setText(f"Défice Detectado! Geração: {geracao:.1f}kW")
                     janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FF9800; font-weight: bold; border: none;")
 
-            # Histerese: Se houver instabilidade confirmada (2 ciclos = 4 segundos), executa o corte
             if janela.ciclos_em_defice >= 2:
                 
-                # 🔄 FILTRO DINÂMICO: Pega apenas cargas seletivas que estão ligadas no momento
                 cargas_para_cortar = [
                     (nome, info) for nome, info in janela.config_cargas.items()
                     if not info.get("critica", False) and info.get("ativo", True)
                 ]
                 
                 if cargas_para_cortar:
-                    # ORDENAÇÃO POR PRIORIDADE: Menor prioridade (1) cai primeiro. 
-                    # Em caso de empate, a carga mais potente cai primeiro para aliviar a rede rápido.
                     cargas_para_cortar.sort(key=lambda x: (x[1].get("prioridade", 1), x[1]["potencia"]))
                     
-                    # Seleciona o primeiro elemento da fila (o de menor prioridade configurada)
                     nome_alvo, info_alvo = cargas_para_cortar[0]
                     potencia_carga = info_alvo["potencia"]
                     prio_atual = info_alvo.get("prioridade", 1)
                     
-                    print(f"[IA - PRIORIDADE] Cortando dispositivo de menor prioridade ({prio_atual}): {nome_alvo} ({potencia_carga}kW)")
+                    print(f"[IA] Cortando dispositivo: {nome_alvo} ({potencia_carga}kW)")
                     
-                    # Altera estado no banco de dados centralizado
                     janela.config_cargas[nome_alvo]["ativo"] = False
                     if nome_alvo not in janela.cargas_desligadas_pela_ia:
                         janela.cargas_desligadas_pela_ia.append(nome_alvo)
                     
-                    # Atualiza visualmente o botão do Dashboard (fica Vermelho)
                     janela.atualizar_visual_botao(nome_alvo)
-                    janela.adicionar_recomendacao_log(f"🚨 IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}) para sanar défice de {abs(saldo):.2f} kW.")
-                    
-                    # Altera o estado na aba secundária de cargas para sincronizar as duas telas
-                    if hasattr(tela_cargas, 'atualizar_interface_externa'):
-                        tela_cargas.atualizar_interface_externa(nome_alvo, False)
-                    elif hasattr(tela_cargas, 'config_cargas') and nome_alvo in tela_cargas.config_cargas:
-                        tela_cargas.config_cargas[nome_alvo]["ativo"] = False
-                    
-                    # Dispara a sincronização de KPIs gerais (recalcula consumo total e plota gráficos)
-                    sincronizar_mudanca_no_dashboard(nome_alvo, False, potencia_carga)
-                    
-                    # Recalcula o saldo temporário após o corte para checar se o sistema estabilizou
-                    saldo += potencia_carga
-                    if saldo >= 0 and (consumo - potencia_carga) <= meta_limite:
-                        janela.ciclos_em_defice = 0
-                        return
-
-       # --- [CORREÇÃO] LÓGICA DE CORTES (PRIORIDADE 1 CORTE POR ÚLTIMO) ---
-        if saldo < 0 or consumo > meta_limite or soc_bateria < 30.0:
-            janela.ciclos_em_defice += 1
-            
-            if hasattr(janela, 'lbl_bateria_status'):
-                if soc_bateria <= 30.0:
-                    janela.lbl_bateria_status.setText(f"⚠️ Bateria Crítica ({soc_bateria:.1f}%)! Cortando Cargas...")
-                    janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #E53935; font-weight: bold; border: none;")
-                else:
-                    janela.lbl_bateria_status.setText(f"⚠️ Défice Detectado! Geração: {geracao:.1f}kW")
-                    janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FF9800; font-weight: bold; border: none;")
-
-            # Histerese: Se houver instabilidade confirmada (2 ciclos = 4 segundos), executa o corte
-            if janela.ciclos_em_defice >= 2:
-                
-                # 🔄 FILTRO DINÂMICO: Pega apenas cargas seletivas que estão ligadas no momento
-                cargas_para_cortar = [
-                    (nome, info) for nome, info in janela.config_cargas.items()
-                    if not info.get("critica", False) and info.get("ativo", True)
-                ]
-                
-                if cargas_para_cortar:
-                    # REVERSÃO AQUI: reverse=True faz a maior prioridade numérica (Ex: Prio 3) ficar no topo da fila.
-                    # Portanto, quem tiver Prioridade 3 cai primeiro; quem tiver Prioridade 1 fica protegido até o fim.
-                    cargas_para_cortar.sort(key=lambda x: (x[1].get("prioridade", 1), x[1]["potencia"]), reverse=True)
-                    
-                    # Seleciona o primeiro elemento da fila organizada
-                    nome_alvo, info_alvo = cargas_para_cortar[0]
-                    potencia_carga = info_alvo["potencia"]
-                    prio_atual = info_alvo.get("prioridade", 1)
-                    
-                    print(f"[IA - PRIORIDADE] Cortando dispositivo de menor importância (Prio {prio_atual}): {nome_alvo} ({potencia_carga}kW)")
-                    
-                    # Altera estado no banco de dados centralizado
-                    janela.config_cargas[nome_alvo]["ativo"] = False
-                    if nome_alvo not in janela.cargas_desligadas_pela_ia:
-                        janela.cargas_desligadas_pela_ia.append(nome_alvo)
-                    
-                    # Atualiza visualmente o botão do Dashboard
-                    janela.atualizar_visual_botao(nome_alvo)
-                    janela.adicionar_recomendacao_log(f"🚨 IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}) para sanar défice.")
+                    janela.adicionar_recomendacao_log(f"IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}).")
                     
                     if hasattr(tela_cargas, 'atualizar_interface_externa'):
                         tela_cargas.atualizar_interface_externa(nome_alvo, False)
@@ -186,23 +107,19 @@ if __name__ == "__main__":
                         janela.ciclos_em_defice = 0
                         return
 
-        # --- LÓGICA DE RELIGAMENTO INTELIGENTE (PRIORIDADE 1 RETORNA PRIMEIRO) ---
         elif saldo > 0 and len(janela.cargas_desligadas_pela_ia) > 0 and soc_bateria > 40.0:
             janela.ciclos_em_defice = 0
             
             if hasattr(janela, 'lbl_bateria_status'):
-                janela.lbl_bateria_status.setText("🔋 Sistema Normalizado: Sobra Solar")
+                janela.lbl_bateria_status.setText("Sistema Normalizado: Sobra Solar")
                 janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
 
-            # 🔄 FILTRO DINÂMICO: Pega as cargas que a IA desligou e que continuam desligadas
             cargas_para_religar = [
                 (nome, janela.config_cargas[nome]) for nome in janela.cargas_desligadas_pela_ia
                 if nome in janela.config_cargas and not janela.config_cargas[nome]["ativo"]
             ]
             
             if cargas_para_religar:
-                # REVERSÃO AQUI: Sem reverse=True, a lista organiza do menor número para o maior.
-                # Ou seja, a Prioridade 1 (mais importante) tenta voltar primeiro assim que houver sobra de energia.
                 cargas_para_religar.sort(key=lambda x: x[1].get("prioridade", 1))
                 
                 for nome_alvo, info_alvo in cargas_para_religar:
@@ -210,13 +127,13 @@ if __name__ == "__main__":
                     prio_atual = info_alvo.get("prioridade", 1)
                     
                     if saldo > (potencia_carga + 0.3) and (consumo + potencia_carga) <= meta_limite:
-                        print(f"[IA - PRIORIDADE] Sobrou energia. Religando dispositivo mais nobre (Prio {prio_atual}): {nome_alvo}")
+                        print(f"[IA] Religando dispositivo: {nome_alvo}")
                         
                         janela.config_cargas[nome_alvo]["ativo"] = True
                         janela.cargas_desligadas_pela_ia.remove(nome_alvo)
                         
                         janela.atualizar_visual_botao(nome_alvo)
-                        janela.adicionar_recomendacao_log(f"💡 IA: Restabelecendo '{nome_alvo}' (Prioridade {prio_atual}).")
+                        janela.adicionar_recomendacao_log(f"IA: Restabelecendo '{nome_alvo}'.")
                         
                         if hasattr(tela_cargas, 'atualizar_interface_externa'):
                             tela_cargas.atualizar_interface_externa(nome_alvo, True)
@@ -227,28 +144,23 @@ if __name__ == "__main__":
                         return
 
 
-    # 🔄 MENSAGENS E LOGS DE SISTEMA OTIMIZADOS (SEM CRASH)
     def sincronizar_mudanca_no_dashboard(nome_carga, esta_ativo, consumo_kw):
-        status_simbolo = "🔌 [LIGADO]" if esta_ativo else "❌ [DESLIGADO]"
+        status_simbolo = "[LIGADO]" if esta_ativo else "[DESLIGADO]"
         print("="*60)
-        print(f"🛰️  SISTEMA CENTRAL | MONITORAMENTO DE EVENTOS")
-        print(f"   🔹 Dispositivo:  {nome_carga}")
-        print(f"   🔹 Operação:     {status_simbolo}")
-        print(f"   🔹 Impacto:      {consumo_kw:.2f} kW")
+        print(f"SISTEMA CENTRAL | MONITORAMENTO")
+        print(f"   Dispositivo: {nome_carga}")
+        print(f"   Operação: {status_simbolo}")
+        print(f"   Impacto: {consumo_kw:.2f} kW")
         print("="*60)
         
-        # 1. Atualiza os dados da barra lateral esquerda no monitoramento geral
         if hasattr(janela, 'atualizar_status_carga_lateral'):
             janela.atualizar_status_carga_lateral(nome_carga, esta_ativo)
             
-        # 2. Recalcula o consumo total baseado no dicionário real unificado
         consumo_total = sum(info["potencia"] for info in janela.config_cargas.values() if info["ativo"])
             
-        # 🟢 ATUALIZAÇÃO DO CONSUMO ATUAL (TELA INICIAL) NOS VALORES KPI DO DASHBOARD
         if hasattr(janela, 'lbl_val_consumo'):
             janela.lbl_val_consumo.setText(f"{consumo_total:.1f} kW")
             
-        # Atualiza o saldo/balanço também na tela principal
         if hasattr(janela, 'lbl_val_saldo') and hasattr(janela, 'lbl_val_geracao'):
             try:
                 geraca_atual = float(janela.lbl_val_geracao.text().replace(" kW", "").strip())
@@ -258,29 +170,23 @@ if __name__ == "__main__":
                 pass
                 
         if consumo_total > 4.0:
-            print(f"⚠️  [ALERTA DE PICOS] Consumo total atingiu {consumo_total:.1f} kW! Risco de sobrecarga.")
+            print(f"ALERTA DE PICOS: Consumo total atingiu {consumo_total:.1f} kW!")
             print("="*60)
 
-        # 3. Dispara mensagem na barra de status inferior se disponível
         if hasattr(janela, 'statusBar') and janela.statusBar():
             status_cor = "ativada" if esta_ativo else "desativada"
-            janela.statusBar().showMessage(f"Aviso: Carga '{nome_carga}' foi {status_cor} com sucesso.", 4000)
+            janela.statusBar().showMessage(f"Carga '{nome_carga}' foi {status_cor}.", 4000)
                     
-        # 📈 4. ATUALIZAÇÃO DO GRÁFICO DE DESEMPENHO
         if hasattr(tela_graficos, 'atualizar_consumo_grafico'):
             tela_graficos.atualizar_consumo_grafico(consumo_total)
 
 
-    # 🔗 Conecta o sinal emissor da aba de cargas à nossa regra corrigida
     if hasattr(tela_cargas, 'carga_alterada'):
         tela_cargas.carga_alterada.connect(sincronizar_mudanca_no_dashboard)
     
-    # 🔌 INJEÇÃO NO TIMER DO DASHBOARD
-    # Sempre que o timer de 2 segundos do dashboard.py bater, ele executa a IA de corte
     janela.timer.timeout.connect(executar_algoritmo_cortes_ia)
 
     try:
-        # Injeta as abas no gerenciador visual
         janela.abas.addTab(tela_cargas, "⚙️ Cargas Críticas")
         janela.abas.addTab(tela_baterias, "🔋 Banco de Baterias")  
         janela.abas.addTab(tela_graficos, "📈 Gráficos de Desempenho")
@@ -303,7 +209,7 @@ if __name__ == "__main__":
             }
         """)
     except AttributeError:
-        print("Aviso: Verifique a configuração do componente '.abas' dentro do seu DashboardEnergia.")
+        print("Erro: Verifique a configuração do componente '.abas'.")
 
     janela.show()
     sys.exit(app.exec())

@@ -6,8 +6,11 @@ class PainelCargasCriticas(QWidget):
     def __init__(self):
         super().__init__()
         
-        # Guardamos uma variável para rastrear quanta potência foi cortada pela IA
         self.potencia_aliviada_total = 0.0
+        
+        # 🔌 PONTE PARA O ARDUINO: Guardamos uma função de callback.
+        # Quando o Main ou o Dashboard conectarem a serial aqui, os comandos vão direto para o hardware.
+        self.callback_serial_arduino = None
         
         self.setStyleSheet("""
             QWidget { background-color: #1E1E1E; border: 1px solid #333333; border-radius: 6px; }
@@ -21,61 +24,80 @@ class PainelCargasCriticas(QWidget):
         
         layout = QVBoxLayout(self)
         
-        lbl_titulo = QLabel("Monitoramento e Controle de Cargas")
+        lbl_titulo = QLabel("Monitoramento e Controle de Cargas (Pronto para Hardware)")
         lbl_titulo.setAlignment(Qt.AlignCenter)
         layout.addWidget(lbl_titulo)
         
-        # 🆕 Nova Label para mostrar a eficiência do gerenciamento de demanda
         self.lbl_status_economia = QLabel("⚡ Sistema operando em carga total")
         self.lbl_status_economia.setStyleSheet("color: #00E676; font-size: 12px; font-weight: normal;")
         self.lbl_status_economia.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.lbl_status_economia)
         
-        # Mantive exatamente a sua estrutura de dicionário, adicionando o campo "potencia" para a física do simulador
+        # Estrutura com ID numérico para facilitar a leitura do lado do Arduino (ex: pino do relé ou índice)
         self.cargas = {
-            "Geladeira": {"critica": True, "potencia": 0.4, "botao": QPushButton("⚡ [CRÍTICA] Geladeira")},
-            "Iluminação Sala": {"critica": True, "potencia": 0.2, "botao": QPushButton("⚡ [CRÍTICA] Iluminação Sala")},
-            "Roteador Internet": {"critica": True, "potencia": 0.1, "botao": QPushButton("⚡ [CRÍTICA] Roteador Internet")},
-            "Ar-Condicionado": {"critica": False, "potencia": 2.0, "botao": QPushButton("⚡ [SISTEMA] Ar-Condicionado")},
-            "Bomba D'água": {"critica": False, "potencia": 1.2, "botao": QPushButton("⚡ [SISTEMA] Bomba D'água")},
-            "Computador": {"critica": False, "potencia": 0.5, "botao": QPushButton("⚡ [SISTEMA] Computador")}
+            "Geladeira": {"id": 1, "critica": True, "potencia": 0.4, "botao": QPushButton("⚡ [CRÍTICA] Geladeira")},
+            "Iluminação Sala": {"id": 2, "critica": True, "potencia": 0.2, "botao": QPushButton("⚡ [CRÍTICA] Iluminação Sala")},
+            "Roteador Internet": {"id": 3, "critica": True, "potencia": 0.1, "botao": QPushButton("⚡ [CRÍTICA] Roteador Internet")},
+            "Ar-Condicionado": {"id": 4, "critica": False, "potencia": 2.0, "botao": QPushButton("⚡ [SISTEMA] Ar-Condicionado")},
+            "Bomba D'água": {"id": 5, "critica": False, "potencia": 1.2, "botao": QPushButton("⚡ [SISTEMA] Bomba D'água")},
+            "Computador": {"id": 6, "critica": False, "potencia": 0.5, "botao": QPushButton("⚡ [SISTEMA] Computador")}
         }
         
         self.estados = {nome: True for nome in self.cargas}
         
         for nome, info in self.cargas.items():
             layout.addWidget(info["botao"])
-            
-            # 🆕 Conecta o clique do botão para permitir controle manual/interativo
-            # Usamos essa construção com lambda para o Python saber qual botão foi clicado
             info["botao"].clicked.connect(lambda checked=False, n=nome: self.alternar_estado_manual(n))
-            
             self.atualizar_estilo_botao(nome)
+            
+    def definir_callback_hardware(self, funcao_envio):
+        """Permite que o seu Main.py conecte a função de transmissão serial aqui"""
+        self.callback_serial_arduino = funcao_envio
             
     def obter_estados(self):
         return self.estados
         
     def definir_estado_carga(self, nome, ligado):
-        """Função que a IA do Dashboard vai chamar para ligar/desligar cargas"""
+        """Modifica o estado (chamado pela IA ou clique) e envia o comando para o Arduino se disponível"""
         if nome in self.estados:
+            # Só envia o comando se o estado realmente mudou (evita inundar a serial do Arduino)
+            estado_anterior = self.estados[nome]
+            
             self.estados[nome] = ligado
             self.atualizar_estilo_botao(nome)
             self.recalcular_alivio_demanda()
             
+            if estado_anterior != ligado:
+                self.notificar_mudanca_hardware(nome, ligado)
+            
     def alternar_estado_manual(self, nome):
-        """Permite que o usuário clique na tela para ligar/desligar um aparelho"""
-        # Cargas críticas não devem ser desligadas manualmente por segurança!
         if self.cargas[nome]["critica"]:
-            return 
+            return # Segurança: cargas críticas não chaveiam manualmente
             
         novo_estado = not self.estados[nome]
         self.definir_estado_carga(nome, novo_estado)
             
+    def notificar_mudanca_hardware(self, nome, ligado):
+        """Formata e envia a string de comando que o Arduino vai ler no void loop()"""
+        id_carga = self.cargas[nome]["id"]
+        acao = "1" if ligado else "0"
+        
+        # Formato de mensagem industrial leve: #ID,ESTADO\n (Exemplo: "#4,0\n" desliga o Ar-Condicionado)
+        comando_protocolo = f"#{id_carga},{acao}\n"
+        
+        # Se o sistema de comunicação serial já estiver conectado, ele transmite o dado real!
+        if self.callback_serial_arduino:
+            try:
+                self.callback_serial_arduino(comando_protocolo)
+            except Exception as e:
+                print(f"Aviso: Falha ao enviar comando de carga para o Arduino: {e}")
+        else:
+            print(f"[Simulador Serial] Arduino receberia: {comando_protocolo.strip()}")
+
     def recalcular_alivio_demanda(self):
-        """Calcula quanta energia estamos economizando por ter aparelhos desligados"""
         alivio = 0.0
         for nome, info in self.cargas.items():
-            if not self.estados[nome]:  # Se estiver desligado
+            if not self.estados[nome]:
                 alivio += info["potencia"]
         
         self.potencia_aliviada_total = alivio

@@ -9,10 +9,9 @@ class LeitorArduino:
         self.conectado = False
         self.hora_atual = 10.0
         
-        # Flags para interceptar a física padrão via botões da interface
         self.forcar_sobrecarga = False
         self.forcar_alta_geracao = False
-        
+            
         self.potencia_cargas = {
             "Geladeira": 0.8,
             "Iluminação Sala": 0.3,
