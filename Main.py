@@ -3,7 +3,8 @@ from PySide6.QtWidgets import QApplication
 
 from Interface.dashboard import DashboardEnergia 
 from Core import comunicacao_serial 
-from Core.banco_dados import carregar_dados, salvar_dados
+# 💾 Importação das funções do banco de dados (Cargas + Histórico de Energia)
+from Core.banco_dados import carregar_dados, salvar_dados, registrar_historico_energia
 from Interface.abas.aba_cargas import AbaCargas
 from Interface.abas.aba_baterias import AbaBaterias  
 from Interface.abas.aba_ia import AbaIA
@@ -62,6 +63,9 @@ if __name__ == "__main__":
         saldo = geracao - consumo
         meta_limite = janela.sld_meta_consumo.value() / 10.0
 
+        # 📊 NOVO: Salva os dados de geração e consumo no banco histórico JSON a cada ciclo
+        registrar_historico_energia(geracao, consumo)
+
         if saldo < 0 or consumo > meta_limite or soc_bateria < 30.0:
             janela.ciclos_em_defice += 1
             
@@ -92,7 +96,7 @@ if __name__ == "__main__":
                     if nome_alvo not in janela.cargas_desligadas_pela_ia:
                         janela.cargas_desligadas_pela_ia.append(nome_alvo)
                     
-                    # 💾 Salva no JSON imediatamente após o corte da IA
+                    # 💾 Salva o estado da carga imediatamente após o corte
                     salvar_dados(janela.config_cargas)
                     
                     janela.atualizar_visual_botao(nome_alvo)
@@ -135,7 +139,7 @@ if __name__ == "__main__":
                         janela.config_cargas[nome_alvo]["ativo"] = True
                         janela.cargas_desligadas_pela_ia.remove(nome_alvo)
                         
-                        # 💾 Salva no JSON imediatamente após a IA religar o aparelho
+                        # 💾 Salva o estado da carga imediatamente após religar
                         salvar_dados(janela.config_cargas)
                         
                         janela.atualizar_visual_botao(nome_alvo)

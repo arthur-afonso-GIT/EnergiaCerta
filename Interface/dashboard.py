@@ -361,7 +361,17 @@ class DashboardEnergia(QMainWindow):
         acao_remover = QAction("❌ Excluir do Sistema", self)
         acao_remover.triggered.connect(lambda: self.excluir_carga(nome))
         menu.addAction(acao_remover)
-        menu.exec(self.config_cargas[nome]["btn"].mapToGlobal(self.config_cargas[nome]["btn"].rect().bottomLeft()))
+        
+        # 🔥 CORREÇÃO SEGURA: Verifica se o botão "btn" existe na interface gráfica
+        botao_visual = self.config_cargas[nome].get("btn")
+        if botao_visual is not None:
+            # Se o botão existe, abre o menu colado nele (comportamento original)
+            menu.exec(botao_visual.mapToGlobal(botao_visual.rect().bottomLeft()))
+        else:
+            # Fallback seguro: se o botão ainda for None (vindo do JSON), 
+            # abre o menu exatamente onde o ponteiro do mouse clicou!
+            from PySide6.QtGui import QCursor
+            menu.exec(QCursor.pos())
 
     # 🔢 NOVO: Processa a caixa de diálogo de prioridades das cargas existentes
     def alterar_prioridade_manual(self, nome):
