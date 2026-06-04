@@ -49,7 +49,7 @@ class AbaBaterias(QWidget):
         
         # 1. CABEÇALHO DO PAINEL
         layout_header = QHBoxLayout()
-        self.titulo = QLabel("🔋 Sistema de Armazenamento e Gerenciamento do Banco de Baterias (EMS)")
+        self.titulo = QLabel("Sistema de Armazenamento e Gerenciamento do Banco de Baterias (EMS)")
         self.titulo.setStyleSheet("font-size: 22px; font-weight: bold; color: #00E676; background: transparent;")
         layout_header.addWidget(self.titulo)
         layout_principal.addLayout(layout_header)
@@ -111,38 +111,35 @@ class AbaBaterias(QWidget):
         self.chart_view_fluxo = self.criar_grafico_fluxo()
         layout_principal.addWidget(self.chart_view_fluxo, stretch=2)
         
-        # 🕒 TIMER DE TELEMETRIA CONTÍNUA (Atualiza a cada 1 segundo simulando telemetria do Arduino SCT013)
+
         self.timer_bateria = QTimer(self)
         self.timer_bateria.timeout.connect(self.atualizar_telemetria_bateria)
         self.timer_bateria.start(1000)
 
     def criar_grafico_fluxo(self):
-        """Cria um gráfico dinâmico centralizado no zero para mostrar carga vs descarga"""
+        """Cria um grafico dinamico centralizado no zero para mostrar carga vs descarga"""
         chart = QChart()
-        chart.setTitle("📉 Histórico de Fluxo de Potência (watts)")
+        chart.setTitle("Historico de Fluxo de Potencia (watts)")
         chart.setTitleBrush(QColor("#FFFFFF"))
         chart.setBackgroundBrush(QColor("#1A1A1A"))
-        chart.setAnimationOptions(QChart.NoAnimation) # Desativa animações para performance em tempo real
+        chart.setAnimationOptions(QChart.NoAnimation)
         
-        # Série de fluxo (Watts: Positivos = Carregando, Negativos = Sustentando a casa)
         self.series_fluxo = QLineSeries()
-        self.series_fluxo.setName("Fluxo Líquido (W)")
-        self.series_fluxo.setColor(QColor("#3b82f6")) # Azul para combinar com o tema de fluxo
+        self.series_fluxo.setName("Fluxo Liquido (W)")
+        self.series_fluxo.setColor(QColor("#3b82f6"))
         self.series_fluxo.append(0, 0.0)
         chart.addSeries(self.series_fluxo)
         
-        # Eixo X (Linha do Tempo)
         self.axis_x_fluxo = QValueAxis()
         self.axis_x_fluxo.setRange(0, 15)
-        self.axis_x_fluxo.setTitleText("Segundos (Linha do Tempo Contínua)")
+        self.axis_x_fluxo.setTitleText("Segundos (Linha do Tempo Continua)")
         self.axis_x_fluxo.setLabelFormat("%d s")
         self.axis_x_fluxo.setLabelsColor(QColor("#888888"))
         chart.addAxis(self.axis_x_fluxo, Qt.AlignBottom)
         self.series_fluxo.attachAxis(self.axis_x_fluxo)
         
-        # Eixo Y (Potência: Positivos e Negativos)
         self.axis_y_fluxo = QValueAxis()
-        self.axis_y_fluxo.setRange(-150, 250) # Ex: Sustentando até 150W de cargas ou carregando a 250W via solar
+        self.axis_y_fluxo.setRange(-150, 250)
         self.axis_y_fluxo.setTitleText("Potência (Watts)")
         self.axis_y_fluxo.setLabelsColor(QColor("#888888"))
         chart.addAxis(self.axis_y_fluxo, Qt.AlignLeft)

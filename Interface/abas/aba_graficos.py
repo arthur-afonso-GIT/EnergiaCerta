@@ -46,7 +46,7 @@ class AbaGraficos(QWidget):
         layout_principal.setSpacing(20)
         
         # 1. TÍTULO
-        self.titulo = QLabel("📊 Desempenho e Eficiência Energética")
+        self.titulo = QLabel("Desempenho e Eficiencia Energetica")
         self.titulo.setStyleSheet("font-size: 22px; font-weight: bold; color: #00E676; background: transparent;")
         layout_principal.addWidget(self.titulo)
         
@@ -75,7 +75,7 @@ class AbaGraficos(QWidget):
         layout_principal.addLayout(layout_graficos, stretch=2)
         
         # 4. TABELA INFERIOR
-        self.lbl_subtitulo = QLabel("📋 Histórico Mensal e Impacto Financeiro")
+        self.lbl_subtitulo = QLabel("Historico Mensal e Impacto Financeiro")
         self.lbl_subtitulo.setStyleSheet("font-size: 16px; font-weight: bold; color: #888888; background: transparent; margin-top: 10px;")
         layout_principal.addWidget(self.lbl_subtitulo)
         
@@ -83,24 +83,23 @@ class AbaGraficos(QWidget):
         self.configurar_tabela()
         layout_principal.addWidget(self.tabela_historico, stretch=1)
 
-        # 🕒 TIMER SEGURO: Só inicia após a janela estar totalmente montada
+
         self.timer_simulacao = QTimer(self)
         self.timer_simulacao.timeout.connect(self.generar_leitura_sensores_ruido)
         self.timer_simulacao.start(1000)
 
     def criar_grafico_linha(self):
-        """Cria o gráfico de linhas puro (altamente estável contra crashes de renderização)"""
+        """Cria o grafico de linhas puro (altamente estavel contra crashes de renderizacao)"""
         chart = QChart()
-        chart.setTitle("📈 Tendências de Consumo Diário (Tempo Real)")
+        chart.setTitle("Tendencias de Consumo Diario (Tempo Real)")
         chart.setTitleBrush(QColor("#FFFFFF"))
         chart.setBackgroundBrush(QColor("#1A1A1A"))
-        chart.setAnimationOptions(QChart.NoAnimation) # Evita bugs de animação paralela em tempo real
+        chart.setAnimationOptions(QChart.NoAnimation)
         
         self.series_linha = QLineSeries()
         self.series_linha.setName("Consumo (kW)")
         self.series_linha.setColor(QColor("#00E676"))
         
-        # Inicializa apenas com o ponto zero para evitar estouro de eixos antes do show()
         self.series_linha.append(0, 0.0)
         chart.addSeries(self.series_linha)
         
@@ -129,9 +128,9 @@ class AbaGraficos(QWidget):
         return view
 
     def criar_grafico_barras(self):
-        """Cria o gráfico de barras verticais de intensidade"""
+        """Cria o grafico de barras verticais de intensidade"""
         chart = QChart()
-        chart.setTitle("⚡ Intensidade de Consumo por Dispositivo")
+        chart.setTitle("Intensidade de Consumo por Dispositivo")
         chart.setTitleBrush(QColor("#FFFFFF"))
         chart.setBackgroundBrush(QColor("#1A1A1A"))
         

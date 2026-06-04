@@ -15,17 +15,17 @@ class DashboardEnergia(QMainWindow):
     def __init__(self, aba_cargas=None, aba_graficos=None, aba_ia=None, aba_baterias=None, parent=None):
         super().__init__(parent)
         
-        # 📥 Recebe as referências externas injetadas pelo Main.py
         self.aba_cargas = aba_cargas
         self.aba_graficos = aba_graficos
         self.aba_ia = aba_ia
         self.aba_baterias = aba_baterias
         
-        # 🔌 Inicialização das Configurações de Janela
+        self.simulacao_ativa = True
+        
         self.setWindowTitle("Energia Certa - Dashboard Principal")
         self.resize(1240, 720)
         
-        # 🎨 Folha de Estilos Global (Modo Escuro Premium)
+        
         self.setStyleSheet("""
             QMainWindow { background-color: #121212; }
             QLabel { color: #FFFFFF; font-family: 'Segoe UI', sans-serif; }
@@ -35,24 +35,23 @@ class DashboardEnergia(QMainWindow):
             QToolButton:hover { background-color: #444444; }
         """)
         
-        # 🔔 Inicialização do Ícone da Bandeja de Sistema (Tray Icon)
+        
         self.tray_icon = QSystemTrayIcon(self)
         caminho_logo = os.path.join(os.path.dirname(__file__), "assets", "logo.png")
         if os.path.exists(caminho_logo):
             self.tray_icon.setIcon(QIcon(caminho_logo))
         self.tray_icon.show()
         
-        # 📈 Vetores de Histórico e Variáveis de Controle
+        
         self.hora_atual = 10.0
         self.historico_horas = []
         self.historico_consumo = []
         self.historico_geracao = []
         
-        # Otimização: Uso de deque com maxlen garante controle de memória cronológico rígido
+        
         self._ultimas_mensagens_ia = deque(maxlen=10)
         
-        # 🧠 Base de Dados Inicializada com Prioridades Padrão (Alteráveis pelo Usuário)
-        # Prioridade: 1 = Cai Primeiro, 3 = Segura mais tempo ligado antes de cair
+        
         self.config_cargas = {
             "Geladeira": {"critica": True, "potencia": 0.8, "ativo": True, "btn": None, "prioridade": 3},
             "Iluminação Sala": {"critica": True, "potencia": 0.3, "ativo": True, "btn": None, "prioridade": 3},
@@ -62,11 +61,7 @@ class DashboardEnergia(QMainWindow):
             "Ar-Condicionado": {"critica": False, "potencia": 2.0, "ativo": True, "btn": None, "prioridade": 3}
         }
         
-        # ======================================================================
-        # 🧱 CONSTRUÇÃO DOS LAYOUTS DA ABA PRINCIPAL
-        # ======================================================================
         
-        # --- COLUNA 1: ESQUERDA (Logo, Cargas e Resumo IA) ---
         self.coluna_esquerda = QVBoxLayout()
         
         # Bloco Superior: Logo e Menu Hamburguer
@@ -91,6 +86,23 @@ class DashboardEnergia(QMainWindow):
         
         self.layout_logo_bloco.addWidget(self.lbl_logo_imagem, alignment=Qt.AlignLeft | Qt.AlignVCenter)
         self.layout_logo_bloco.addWidget(self.botao_menu, alignment=Qt.AlignRight | Qt.AlignVCenter)
+        
+        
+        self.btn_alternar_simulacao = QPushButton("Simulação: ATIVA 🟢")
+        self.btn_alternar_simulacao.setStyleSheet("""
+            QPushButton {
+                background-color: #2E7D32;
+                color: white;
+                font-weight: bold;
+                border: none;
+                padding: 10px;
+                border-radius: 4px;
+                font-size: 11px;
+            }
+            QPushButton:hover {
+                background-color: #1B5E20;
+            }
+        """)
         
         # Bloco Central: Lista Dinâmica de Cargas com Scroll
         self.painel_cargas_container = QWidget()
@@ -136,11 +148,13 @@ class DashboardEnergia(QMainWindow):
         self.lbl_decisao_texto.setWordWrap(True)
         layout_rec.addWidget(self.lbl_decisao_texto)
         
+        # Posicionamento estrutural na coluna esquerda (Inclusão do novo botão)
         self.coluna_esquerda.addWidget(self.container_logo, stretch=1)
+        self.coluna_esquerda.addWidget(self.btn_alternar_simulacao, stretch=0) # Alocado logo abaixo do logo
         self.coluna_esquerda.addWidget(self.painel_cargas_container, stretch=5)
         self.coluna_esquerda.addWidget(self.painel_recomendacoes, stretch=2)
         
-        # --- COLUNA 2: CENTRAL (Cards KPI e Matplotlib) ---
+        
         self.coluna_central = QVBoxLayout()
         self.linha_cards = QHBoxLayout()
         
@@ -161,7 +175,7 @@ class DashboardEnergia(QMainWindow):
         self.layout_grafico_bloco.addWidget(self.canvas_grafico)
         self.coluna_central.addWidget(self.container_grafico, stretch=5)
         
-        # --- COLUNA 3: DIREITA (Metas, Agendamento e Logs Internos) ---
+        
         self.coluna_right = QVBoxLayout()
         
         # Configuração de Metas / Slider
@@ -285,7 +299,7 @@ class DashboardEnergia(QMainWindow):
                 self.txt_historico_decisoes.ensureCursorVisible()
                 self._ultimas_mensagens_ia.append(mensagem)
                 
-                # 🔔 SISTEMA DE NOTIFICAÇÕES CORRIGIDO (Sem 'message' em inglês)
+                # 🔔 SISTEMA DE NOTIFICAÇÕES CORRIGIDO
                 if hasattr(self, 'notificar_alerta'):
                     if any(x in mensagem for x in ["🚨", "⚠️", "Decisão", "Configuração"]):
                         self.notificar_alerta("IA: Gerenciamento Ativo", mensagem)
@@ -351,7 +365,7 @@ class DashboardEnergia(QMainWindow):
         acao_tipo.triggered.connect(lambda: self.alternar_tipo_critica(nome))
         menu.addAction(acao_tipo)
 
-        # 🔢 NOVO: Permite alterar a prioridade das cargas seletivas dinamicamente
+        # 🔢 Permite alterar a prioridade das cargas seletivas dinamicamente
         if not self.config_cargas[nome]["critica"]:
             acao_prioridade = QAction("🔢 Alterar Nível de Prioridade", self)
             acao_prioridade.triggered.connect(lambda: self.alterar_prioridade_manual(nome))
@@ -362,18 +376,13 @@ class DashboardEnergia(QMainWindow):
         acao_remover.triggered.connect(lambda: self.excluir_carga(nome))
         menu.addAction(acao_remover)
         
-        # 🔥 CORREÇÃO SEGURA: Verifica se o botão "btn" existe na interface gráfica
         botao_visual = self.config_cargas[nome].get("btn")
         if botao_visual is not None:
-            # Se o botão existe, abre o menu colado nele (comportamento original)
             menu.exec(botao_visual.mapToGlobal(botao_visual.rect().bottomLeft()))
         else:
-            # Fallback seguro: se o botão ainda for None (vindo do JSON), 
-            # abre o menu exatamente onde o ponteiro do mouse clicou!
             from PySide6.QtGui import QCursor
             menu.exec(QCursor.pos())
 
-    # 🔢 NOVO: Processa a caixa de diálogo de prioridades das cargas existentes
     def alterar_prioridade_manual(self, nome):
         prio_atual = self.config_cargas[nome].get("prioridade", 1)
         nova_prio, ok = QInputDialog.getInt(
@@ -405,7 +414,6 @@ class DashboardEnergia(QMainWindow):
             del self.config_cargas[nome]
             self.adicionar_recomendacao_log(f"Remoção: Dispositivo '{nome}' excluído do banco do sistema.")
 
-    # 🔢 ATUALIZADO: Cadastro de Novas Cargas perguntando prioridades
     def abrir_dialogo_adicionar_carga(self):
         nome, ok1 = QInputDialog.getText(self, "Nova Carga", "Nome do Aparelho:")
         if not ok1 or not nome.strip(): return
@@ -446,6 +454,11 @@ class DashboardEnergia(QMainWindow):
     # ======================================================================
     def loop_atualizacao_tempo_real(self):
         try:
+            # 🛡️ INTERRUPTOR DA SIMULAÇÃO GRÁFICA
+            # Se a simulação for pausada, congela a progressão de dados e gráficos locais
+            if not getattr(self, "simulacao_ativa", True):
+                return
+
             # 🕒 1. PROGRESSÃO DO RELÓGIO SOLAR
             self.hora_atual = (self.hora_atual + 0.25) % 24
             horas_inteiras = int(self.hora_atual)

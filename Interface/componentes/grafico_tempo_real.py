@@ -16,9 +16,9 @@ class CanvasGraficoEnergia(FigureCanvas):
         self.eixos.set_facecolor('#1E1E1E')
         
         self.eixos.plot(horas, consumo, color='#E53935', marker='o', linewidth=2, label='Consumo (kWh)')
-        self.eixos.plot(horas, geracao, color='#4CAF50', marker='o', linewidth=2, label='Geração (kWh)')
+        self.eixos.plot(horas, geracao, color='#4CAF50', marker='o', linewidth=2, label='Geracao (kWh)')
         
-        self.eixos.set_title("Histórico de Geração vs Consumo", color='white', fontsize=12, fontweight='bold', pad=10)
+        self.eixos.set_title("Historico de Geracao vs Consumo", color='white', fontsize=12, fontweight='bold', pad=10)
         self.eixos.tick_params(colors='white', labelsize=9)
         
         for spine in self.eixos.spines.values():

@@ -25,7 +25,6 @@ class CardStatusIA(QFrame):
         lbl_titulo = QLabel(titulo)
         lbl_titulo.setStyleSheet("color: #888888; font-size: 11px; font-weight: bold; letter-spacing: 1px; background: transparent;")
         
-        # 🚨 CORRIGIDO: Agora usa 'self.' para ser acessível externamente no método de progresso!
         self.lbl_valor = QLabel(f"{icone_status} {valor}")
         self.lbl_valor.setStyleSheet(f"color: {cor_destaque}; font-size: 20px; font-weight: bold; background: transparent;")
         
@@ -102,10 +101,10 @@ class AbaIA(QWidget):
         
         # 1. CABEÇALHO DA INTERFACE
         layout_header = QHBoxLayout()
-        self.titulo = QLabel("🧠 Inteligência Preditiva e Algoritmos de Demanda")
+        self.titulo = QLabel("Inteligencia Preditiva e Algoritmos de Demanda")
         self.titulo.setStyleSheet("font-size: 22px; font-weight: bold; color: #00E676; background: transparent;")
         
-        self.btn_otimizar = QPushButton("⚡ Recomputar Redes")
+        self.btn_otimizar = QPushButton("Recomputar Redes")
         self.btn_otimizar.setCursor(Qt.PointingHandCursor)
         self.btn_otimizar.setStyleSheet("""
             QPushButton {
@@ -152,13 +151,13 @@ class AbaIA(QWidget):
         self.progresso_ia.setVisible(False)
         layout_principal.addWidget(self.progresso_ia)
         
-        # 2. CARDS SUPERIORES DE TELEMETRIA MATEMÁTICA
+        # 2. CARDS SUPERIORES DE TELEMETRIA MATEMATICA
         layout_cards = QHBoxLayout()
         layout_cards.setSpacing(15)
         
-        self.card_modo = CardStatusIA("POLÍTICA OPERACIONAL", "DESPACHO ECONÔMICO", "🛡️", "#00E676")
-        self.card_confianca = CardStatusIA("CONFIANÇA DO MODELO (R²)", "98.7 %", "📊", "#3b82f6")
-        self.card_proxima_acao = CardStatusIA("PROG. DE ALÍVIO DE CARGA", "Modulação às 18:00h", "⏱️", "#FFD700")
+        self.card_modo = CardStatusIA("POLITICA OPERACIONAL", "DESPACHO ECONOMICO", "", "#00E676")
+        self.card_confianca = CardStatusIA("CONFIANCA DO MODELO (R2)", "98.7 %", "", "#3b82f6")
+        self.card_proxima_acao = CardStatusIA("PROG. DE ALIVIO DE CARGA", "Modulacao as 18:00h", "", "#FFD700")
         
         layout_cards.addWidget(self.card_modo)
         layout_cards.addWidget(self.card_confianca)
@@ -175,7 +174,7 @@ class AbaIA(QWidget):
         
         # Container de Insights à direita
         layout_insights_container = QVBoxLayout()
-        lbl_insights_titulo = QLabel("📋 Diagnósticos e Ações Recomendadas")
+        lbl_insights_titulo = QLabel("Diagnosticos e Acoes Recomendadas")
         lbl_insights_titulo.setStyleSheet("font-size: 14px; font-weight: bold; color: #888888; background: transparent; margin-bottom: 5px;")
         layout_insights_container.addWidget(lbl_insights_titulo)
         

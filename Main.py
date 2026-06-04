@@ -3,7 +3,6 @@ from PySide6.QtWidgets import QApplication
 
 from Interface.dashboard import DashboardEnergia 
 from Core import comunicacao_serial 
-# 💾 Importação das funções do banco de dados (Cargas + Histórico de Energia)
 from Core.banco_dados import carregar_dados, salvar_dados, registrar_historico_energia
 from Interface.abas.aba_cargas import AbaCargas
 from Interface.abas.aba_baterias import AbaBaterias  
@@ -31,9 +30,17 @@ if __name__ == "__main__":
     janela.ciclos_em_defice = 0 
     janela.cargas_desligadas_pela_ia = [] 
 
+    janela.simulacao_ativa = True 
+
     def executar_algoritmo_cortes_ia():
         """Gerencia cortes inteligentes de cargas com base em prioridades."""
         
+        if not getattr(janela, "simulacao_ativa", True):
+            if hasattr(janela, 'lbl_bateria_status'):
+                janela.lbl_bateria_status.setText("Simulacao Pausada")
+                janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #888888; font-weight: bold; border: none;")
+            return
+
         geracao = 0.0
         if hasattr(janela, 'lbl_val_geracao'):
             try:
@@ -63,7 +70,6 @@ if __name__ == "__main__":
         saldo = geracao - consumo
         meta_limite = janela.sld_meta_consumo.value() / 10.0
 
-        # 📊 NOVO: Salva os dados de geração e consumo no banco histórico JSON a cada ciclo
         registrar_historico_energia(geracao, consumo)
 
         if saldo < 0 or consumo > meta_limite or soc_bateria < 30.0:
@@ -96,7 +102,6 @@ if __name__ == "__main__":
                     if nome_alvo not in janela.cargas_desligadas_pela_ia:
                         janela.cargas_desligadas_pela_ia.append(nome_alvo)
                     
-                    # 💾 Salva o estado da carga imediatamente após o corte
                     salvar_dados(janela.config_cargas)
                     
                     janela.atualizar_visual_botao(nome_alvo)
@@ -139,7 +144,6 @@ if __name__ == "__main__":
                         janela.config_cargas[nome_alvo]["ativo"] = True
                         janela.cargas_desligadas_pela_ia.remove(nome_alvo)
                         
-                        # 💾 Salva o estado da carga imediatamente após religar
                         salvar_dados(janela.config_cargas)
                         
                         janela.atualizar_visual_botao(nome_alvo)
@@ -195,6 +199,24 @@ if __name__ == "__main__":
         tela_cargas.carga_alterada.connect(sincronizar_mudanca_no_dashboard)
     
     janela.timer.timeout.connect(executar_algoritmo_cortes_ia)
+
+    # 🔌 CONEXÃO COM O BOTÃO DA INTERFACE:
+    # Se você tiver um botão de simulação na janela, linkamos ele aqui para alternar o estado.
+    # Exemplo ligando a um botão fictício chamado 'btn_alternar_simulacao':
+    if hasattr(janela, 'btn_alternar_simulacao'):
+        def alternar_estado_simulacao():
+            # Inverte o estado lógico
+            janela.simulacao_ativa = not janela.simulacao_ativa
+            
+            # Atualiza o visual do botão baseado no estado
+            if janela.simulacao_ativa:
+                janela.btn_alternar_simulacao.setText("Simulação: ATIVA 🟢")
+                janela.btn_alternar_simulacao.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; border-radius: 5px; padding: 8px; margin: 5px;")
+            else:
+                janela.btn_alternar_simulacao.setText("Simulação: PAUSADA 🔴")
+                janela.btn_alternar_simulacao.setStyleSheet("background-color: #C62828; color: white; font-weight: bold; border-radius: 5px; padding: 8px; margin: 5px;")
+                
+        janela.btn_alternar_simulacao.clicked.connect(alternar_estado_simulacao)
 
     try:
         janela.abas.addTab(tela_cargas, "⚙️ Cargas Críticas")
