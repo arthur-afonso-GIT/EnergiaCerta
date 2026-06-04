@@ -200,9 +200,7 @@ if __name__ == "__main__":
     
     janela.timer.timeout.connect(executar_algoritmo_cortes_ia)
 
-    # 🔌 CONEXÃO COM O BOTÃO DA INTERFACE:
-    # Se você tiver um botão de simulação na janela, linkamos ele aqui para alternar o estado.
-    # Exemplo ligando a um botão fictício chamado 'btn_alternar_simulacao':
+    
     if hasattr(janela, 'btn_alternar_simulacao'):
         def alternar_estado_simulacao():
             # Inverte o estado lógico
