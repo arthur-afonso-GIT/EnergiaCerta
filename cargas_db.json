@@ -1,37 +1,37 @@
 {
     "Geladeira": {
-        "critica": true,
         "potencia": 0.8,
+        "critica": true,
         "ativo": true,
         "prioridade": 1
     },
     "Iluminação Sala": {
-        "critica": true,
         "potencia": 0.3,
+        "critica": true,
         "ativo": true,
         "prioridade": 1
     },
     "Roteador Internet": {
-        "critica": true,
         "potencia": 0.1,
+        "critica": true,
         "ativo": true,
         "prioridade": 1
     },
     "Ar-Condicionado": {
-        "critica": false,
         "potencia": 2.0,
+        "critica": false,
         "ativo": false,
         "prioridade": 1
     },
     "Bomba D'água": {
-        "critica": false,
         "potencia": 1.2,
+        "critica": false,
         "ativo": false,
         "prioridade": 3
     },
     "Computador": {
-        "critica": false,
         "potencia": 0.5,
+        "critica": false,
         "ativo": false,
         "prioridade": 2
     }

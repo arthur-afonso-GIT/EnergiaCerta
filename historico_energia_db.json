@@ -1,0 +1,3512 @@
+[
+    {
+        "timestamp": "2026-06-03 18:58:54",
+        "geracao_kw": 4.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-03 18:58:56",
+        "geracao_kw": 4.2,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-03 18:58:58",
+        "geracao_kw": 4.2,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-03 18:59:00",
+        "geracao_kw": 4.4,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 11:43:49",
+        "geracao_kw": 4.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 11:44:11",
+        "geracao_kw": 4.2,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 11:44:19",
+        "geracao_kw": 4.3,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.1
+    },
+    {
+        "timestamp": "2026-06-04 11:44:21",
+        "geracao_kw": 4.3,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.1
+    },
+    {
+        "timestamp": "2026-06-04 12:18:37",
+        "geracao_kw": 4.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 12:18:39",
+        "geracao_kw": 4.2,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 12:23:30",
+        "geracao_kw": 4.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 12:23:32",
+        "geracao_kw": 4.2,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 12:23:46",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 12:23:48",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 12:23:50",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 12:23:52",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 12:23:54",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 12:23:56",
+        "geracao_kw": 4.5,
+        "consumo_kw": 2.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 12:23:58",
+        "geracao_kw": 4.5,
+        "consumo_kw": 2.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 12:24:00",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 12:24:02",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 12:24:04",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 12:24:06",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 12:24:08",
+        "geracao_kw": 4.1,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.1
+    },
+    {
+        "timestamp": "2026-06-04 12:24:10",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 12:24:12",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 12:24:14",
+        "geracao_kw": 3.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.7
+    },
+    {
+        "timestamp": "2026-06-04 12:24:16",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 12:24:18",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 12:24:20",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 12:24:22",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 12:27:05",
+        "geracao_kw": 4.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 12:27:07",
+        "geracao_kw": 4.1,
+        "consumo_kw": 1.2,
+        "saldo_kw": 2.9
+    },
+    {
+        "timestamp": "2026-06-04 12:27:09",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.4,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 12:27:11",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.4,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 12:27:13",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.4,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 12:27:15",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.3,
+        "saldo_kw": 4.1
+    },
+    {
+        "timestamp": "2026-06-04 12:27:17",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 12:27:19",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 12:27:21",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 12:27:23",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 12:27:25",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 12:27:27",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 12:27:29",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 12:27:31",
+        "geracao_kw": 4.1,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.1
+    },
+    {
+        "timestamp": "2026-06-04 12:27:33",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 12:27:35",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 12:27:37",
+        "geracao_kw": 3.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.8
+    },
+    {
+        "timestamp": "2026-06-04 12:27:39",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 12:27:41",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 12:27:43",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 12:27:45",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 12:27:47",
+        "geracao_kw": 2.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.7
+    },
+    {
+        "timestamp": "2026-06-04 12:27:49",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 12:27:51",
+        "geracao_kw": 2.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.2
+    },
+    {
+        "timestamp": "2026-06-04 12:27:53",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 12:27:55",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 12:27:57",
+        "geracao_kw": 1.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 12:27:59",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 12:28:01",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 12:28:03",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 12:28:05",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 12:28:07",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:09",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:11",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:13",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:15",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:17",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:19",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:21",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:23",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:25",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:27",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:29",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:31",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:33",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:35",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:37",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:39",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:41",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:43",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:45",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:47",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:49",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:51",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:53",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:55",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:57",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:28:59",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:29:01",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:29:03",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:29:05",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:29:07",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:29:09",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:29:11",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 12:29:13",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:52:06",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 18:52:08",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 18:52:10",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 18:52:12",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:52:14",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 18:52:16",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 18:52:18",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:52:20",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:52:32",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:52:34",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:52:36",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 18:52:38",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:52:40",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:52:42",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.8,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 18:52:44",
+        "geracao_kw": 4.0,
+        "consumo_kw": 1.1,
+        "saldo_kw": 2.9
+    },
+    {
+        "timestamp": "2026-06-04 18:52:46",
+        "geracao_kw": 3.9,
+        "consumo_kw": 1.1,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 18:52:48",
+        "geracao_kw": 3.7,
+        "consumo_kw": 1.1,
+        "saldo_kw": 2.6
+    },
+    {
+        "timestamp": "2026-06-04 18:52:50",
+        "geracao_kw": 3.6,
+        "consumo_kw": 1.1,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 18:52:52",
+        "geracao_kw": 3.4,
+        "consumo_kw": 1.1,
+        "saldo_kw": 2.3
+    },
+    {
+        "timestamp": "2026-06-04 18:52:54",
+        "geracao_kw": 3.2,
+        "consumo_kw": 1.1,
+        "saldo_kw": 2.1
+    },
+    {
+        "timestamp": "2026-06-04 18:52:56",
+        "geracao_kw": 3.0,
+        "consumo_kw": 1.1,
+        "saldo_kw": 1.9
+    },
+    {
+        "timestamp": "2026-06-04 18:52:58",
+        "geracao_kw": 2.7,
+        "consumo_kw": 1.1,
+        "saldo_kw": 1.6
+    },
+    {
+        "timestamp": "2026-06-04 18:53:00",
+        "geracao_kw": 2.5,
+        "consumo_kw": 1.1,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 18:53:02",
+        "geracao_kw": 2.2,
+        "consumo_kw": 1.1,
+        "saldo_kw": 1.1
+    },
+    {
+        "timestamp": "2026-06-04 18:53:04",
+        "geracao_kw": 2.0,
+        "consumo_kw": 1.1,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 18:53:06",
+        "geracao_kw": 1.7,
+        "consumo_kw": 1.1,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 18:53:08",
+        "geracao_kw": 1.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.5
+    },
+    {
+        "timestamp": "2026-06-04 18:53:10",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 18:53:12",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 18:53:14",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 18:53:16",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 18:53:18",
+        "geracao_kw": -0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": -0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:20",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:22",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:24",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:26",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:28",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:30",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:32",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:34",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:36",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:38",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:40",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:42",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:44",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:46",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:48",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:50",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:52",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:54",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:56",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:53:58",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:00",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:02",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:04",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:06",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:08",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:10",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:12",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:14",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:16",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:18",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:20",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:22",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:24",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:26",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:28",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:30",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:32",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:34",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:36",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:38",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:40",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:42",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:44",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:46",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:48",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:50",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:52",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:54",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:54:56",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 18:54:58",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 18:55:00",
+        "geracao_kw": 0.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.8
+    },
+    {
+        "timestamp": "2026-06-04 18:55:02",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 18:55:04",
+        "geracao_kw": 1.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.5
+    },
+    {
+        "timestamp": "2026-06-04 18:55:06",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 18:55:08",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 18:55:10",
+        "geracao_kw": 2.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.3
+    },
+    {
+        "timestamp": "2026-06-04 18:55:12",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 18:55:14",
+        "geracao_kw": 2.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 18:55:16",
+        "geracao_kw": 2.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.9
+    },
+    {
+        "timestamp": "2026-06-04 18:55:18",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 18:55:20",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 18:55:22",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 18:55:24",
+        "geracao_kw": 3.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.7
+    },
+    {
+        "timestamp": "2026-06-04 18:55:26",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 18:55:28",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 18:55:30",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 18:55:32",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 18:55:34",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:55:36",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 18:55:38",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:55:40",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:55:42",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:55:44",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:55:46",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:55:48",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 18:55:50",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:55:52",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:55:54",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 18:55:56",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 18:55:58",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 18:56:00",
+        "geracao_kw": 3.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.7
+    },
+    {
+        "timestamp": "2026-06-04 18:56:02",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 18:56:04",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 18:56:06",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 18:56:08",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:10",
+        "geracao_kw": 2.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.7
+    },
+    {
+        "timestamp": "2026-06-04 18:56:12",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 18:56:14",
+        "geracao_kw": 2.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.3
+    },
+    {
+        "timestamp": "2026-06-04 18:56:16",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:18",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 18:56:20",
+        "geracao_kw": 1.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 18:56:22",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 18:56:24",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 18:56:26",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 18:56:28",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 18:56:30",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:32",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:34",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:36",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:38",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:40",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:42",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:44",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:46",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:48",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:50",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:52",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:54",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:56",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:56:58",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:00",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:02",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:04",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:06",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:08",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:10",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:12",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:14",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:16",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:18",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:20",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:22",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:24",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:26",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:28",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:30",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:32",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:34",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:36",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:38",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:40",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:42",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:44",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:46",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:48",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:50",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:52",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:54",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:56",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:57:58",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:58:00",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:58:02",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:58:05",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:58:06",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:58:09",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 18:58:10",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 18:58:12",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 18:58:14",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 18:58:16",
+        "geracao_kw": 1.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 18:58:18",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 18:58:20",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 18:58:22",
+        "geracao_kw": 2.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.2
+    },
+    {
+        "timestamp": "2026-06-04 18:58:24",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 18:58:26",
+        "geracao_kw": 2.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.7
+    },
+    {
+        "timestamp": "2026-06-04 18:58:28",
+        "geracao_kw": 2.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.9
+    },
+    {
+        "timestamp": "2026-06-04 18:58:30",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 18:58:32",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 18:58:34",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 18:58:36",
+        "geracao_kw": 3.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.8
+    },
+    {
+        "timestamp": "2026-06-04 18:58:38",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 18:58:40",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 18:58:42",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 18:58:44",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:58:46",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:58:48",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 18:58:50",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:58:52",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:58:54",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:58:56",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:58:58",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 18:59:00",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 18:59:02",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:59:04",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 18:59:06",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 18:59:08",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:10",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 18:59:12",
+        "geracao_kw": 3.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.7
+    },
+    {
+        "timestamp": "2026-06-04 18:59:14",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 18:59:17",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 18:59:18",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 18:59:21",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:23",
+        "geracao_kw": 2.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.7
+    },
+    {
+        "timestamp": "2026-06-04 18:59:24",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 18:59:27",
+        "geracao_kw": 2.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.2
+    },
+    {
+        "timestamp": "2026-06-04 18:59:29",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:30",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 18:59:32",
+        "geracao_kw": 1.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.5
+    },
+    {
+        "timestamp": "2026-06-04 18:59:34",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 18:59:36",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 18:59:38",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 18:59:40",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 18:59:43",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:45",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:47",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:49",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:51",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:53",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:55",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:57",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 18:59:59",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:01",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:03",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:05",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:07",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:09",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:11",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:13",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:15",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:17",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:19",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:21",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:23",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:25",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:27",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:29",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:31",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:33",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:35",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:37",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:39",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:41",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:43",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:45",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:47",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:49",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:51",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:53",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:55",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:57",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:00:59",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:01",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:03",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:05",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:07",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:09",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:11",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:13",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:15",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:17",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:19",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:21",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 19:01:23",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 19:01:25",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 19:01:27",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:01:29",
+        "geracao_kw": 1.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 19:01:31",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 19:01:33",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:35",
+        "geracao_kw": 2.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.3
+    },
+    {
+        "timestamp": "2026-06-04 19:01:37",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 19:01:39",
+        "geracao_kw": 2.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.7
+    },
+    {
+        "timestamp": "2026-06-04 19:01:41",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:43",
+        "geracao_kw": 3.1,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.1
+    },
+    {
+        "timestamp": "2026-06-04 19:01:45",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 19:01:47",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 19:01:49",
+        "geracao_kw": 3.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.8
+    },
+    {
+        "timestamp": "2026-06-04 19:01:51",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 19:01:53",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 19:01:55",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 19:01:57",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:01:59",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:02:01",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:02:03",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:02:05",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:02:07",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:02:09",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:02:11",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:02:13",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:02:15",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:02:17",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 19:02:19",
+        "geracao_kw": 4.1,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.1
+    },
+    {
+        "timestamp": "2026-06-04 19:02:21",
+        "geracao_kw": 4.1,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.1
+    },
+    {
+        "timestamp": "2026-06-04 19:02:23",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 19:02:25",
+        "geracao_kw": 3.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.8
+    },
+    {
+        "timestamp": "2026-06-04 19:02:27",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 19:02:29",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 19:02:31",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 19:02:33",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 19:02:35",
+        "geracao_kw": 2.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 19:02:37",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 19:02:39",
+        "geracao_kw": 2.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.2
+    },
+    {
+        "timestamp": "2026-06-04 19:02:43",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 19:02:45",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 19:02:47",
+        "geracao_kw": 1.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 19:02:49",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:02:51",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 19:02:53",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 19:02:55",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 19:02:57",
+        "geracao_kw": -0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": -0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:02:59",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:01",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:03",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:05",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:07",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:09",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:11",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:13",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:15",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:17",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:19",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:21",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:23",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:25",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:27",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:29",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:31",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:33",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:35",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:37",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:39",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:41",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:43",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:45",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:47",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:49",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:51",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:53",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:55",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:57",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:03:59",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:01",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:03",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:05",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:07",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:09",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:11",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:13",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:15",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:17",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:19",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:21",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:23",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:25",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:27",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:29",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:31",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:33",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:35",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 19:04:37",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 19:04:39",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 19:04:41",
+        "geracao_kw": 1.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:04:43",
+        "geracao_kw": 1.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 19:04:45",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 19:04:47",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 19:04:49",
+        "geracao_kw": 2.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.2
+    },
+    {
+        "timestamp": "2026-06-04 19:04:51",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 19:04:53",
+        "geracao_kw": 2.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.7
+    },
+    {
+        "timestamp": "2026-06-04 19:04:55",
+        "geracao_kw": 2.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.9
+    },
+    {
+        "timestamp": "2026-06-04 19:04:57",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 19:04:59",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 19:05:01",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 19:05:03",
+        "geracao_kw": 3.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.7
+    },
+    {
+        "timestamp": "2026-06-04 19:05:05",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 19:05:07",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 19:05:09",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 19:05:11",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:05:13",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:05:15",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:05:17",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:05:19",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:05:21",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:05:23",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:05:25",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:05:27",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:05:29",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:05:31",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:05:33",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 19:05:35",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 19:05:37",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 19:05:39",
+        "geracao_kw": 3.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.8
+    },
+    {
+        "timestamp": "2026-06-04 19:05:41",
+        "geracao_kw": 3.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.6
+    },
+    {
+        "timestamp": "2026-06-04 19:05:43",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 19:05:45",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 19:05:47",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 19:05:49",
+        "geracao_kw": 2.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 19:05:51",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 19:05:53",
+        "geracao_kw": 2.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.2
+    },
+    {
+        "timestamp": "2026-06-04 19:05:55",
+        "geracao_kw": 2.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.0
+    },
+    {
+        "timestamp": "2026-06-04 19:05:57",
+        "geracao_kw": 1.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.7
+    },
+    {
+        "timestamp": "2026-06-04 19:05:59",
+        "geracao_kw": 1.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.4
+    },
+    {
+        "timestamp": "2026-06-04 19:06:01",
+        "geracao_kw": 1.1,
+        "consumo_kw": 0.0,
+        "saldo_kw": 1.1
+    },
+    {
+        "timestamp": "2026-06-04 19:06:03",
+        "geracao_kw": 0.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 19:06:05",
+        "geracao_kw": 0.6,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.6
+    },
+    {
+        "timestamp": "2026-06-04 19:06:07",
+        "geracao_kw": 0.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.3
+    },
+    {
+        "timestamp": "2026-06-04 19:06:09",
+        "geracao_kw": -0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": -0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:11",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:13",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:15",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:17",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:19",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:21",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:23",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:25",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:27",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:29",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:31",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:33",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:35",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:37",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:39",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:41",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:43",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:45",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:47",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:49",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:51",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:53",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:55",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:57",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:06:59",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:07:01",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:07:03",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:07:05",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:07:07",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:07:09",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 19:31:11",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 19:31:13",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 19:31:15",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:31:17",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:31:19",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:31:21",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:23",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:25",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:27",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:29",
+        "geracao_kw": 4.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:31",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:31:33",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.4
+    },
+    {
+        "timestamp": "2026-06-04 19:31:35",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.3
+    },
+    {
+        "timestamp": "2026-06-04 19:31:37",
+        "geracao_kw": 4.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.2
+    },
+    {
+        "timestamp": "2026-06-04 19:31:39",
+        "geracao_kw": 4.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 19:31:41",
+        "geracao_kw": 3.9,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 19:31:43",
+        "geracao_kw": 3.8,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.8
+    },
+    {
+        "timestamp": "2026-06-04 19:31:45",
+        "geracao_kw": 3.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:47",
+        "geracao_kw": 3.4,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.4
+    },
+    {
+        "timestamp": "2026-06-04 19:31:49",
+        "geracao_kw": 3.2,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.2
+    },
+    {
+        "timestamp": "2026-06-04 19:31:51",
+        "geracao_kw": 3.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 19:31:53",
+        "geracao_kw": 2.7,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.7
+    },
+    {
+        "timestamp": "2026-06-04 19:31:55",
+        "geracao_kw": 2.5,
+        "consumo_kw": 0.0,
+        "saldo_kw": 2.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:57",
+        "geracao_kw": 2.3,
+        "consumo_kw": 0.8,
+        "saldo_kw": 1.5
+    },
+    {
+        "timestamp": "2026-06-04 19:31:59",
+        "geracao_kw": 2.0,
+        "consumo_kw": 1.1,
+        "saldo_kw": 0.9
+    },
+    {
+        "timestamp": "2026-06-04 19:32:01",
+        "geracao_kw": 1.7,
+        "consumo_kw": 1.2,
+        "saldo_kw": 0.5
+    },
+    {
+        "timestamp": "2026-06-04 19:32:03",
+        "geracao_kw": 1.4,
+        "consumo_kw": 1.2,
+        "saldo_kw": 0.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:05",
+        "geracao_kw": 1.2,
+        "consumo_kw": 2.4,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:07",
+        "geracao_kw": 0.9,
+        "consumo_kw": 2.4,
+        "saldo_kw": -1.5
+    },
+    {
+        "timestamp": "2026-06-04 19:32:09",
+        "geracao_kw": 0.6,
+        "consumo_kw": 1.2,
+        "saldo_kw": -0.6
+    },
+    {
+        "timestamp": "2026-06-04 19:32:11",
+        "geracao_kw": 0.3,
+        "consumo_kw": 1.2,
+        "saldo_kw": -0.9
+    },
+    {
+        "timestamp": "2026-06-04 19:32:13",
+        "geracao_kw": -0.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:15",
+        "geracao_kw": 0.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:17",
+        "geracao_kw": 0.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:19",
+        "geracao_kw": 0.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:21",
+        "geracao_kw": 0.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:23",
+        "geracao_kw": 0.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:32:25",
+        "geracao_kw": 0.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": -1.2
+    },
+    {
+        "timestamp": "2026-06-04 19:49:03",
+        "geracao_kw": 4.0,
+        "consumo_kw": 1.2,
+        "saldo_kw": 2.8
+    },
+    {
+        "timestamp": "2026-06-04 19:49:05",
+        "geracao_kw": 4.2,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.0
+    },
+    {
+        "timestamp": "2026-06-04 19:49:07",
+        "geracao_kw": 4.3,
+        "consumo_kw": 0.4,
+        "saldo_kw": 3.9
+    },
+    {
+        "timestamp": "2026-06-04 19:49:09",
+        "geracao_kw": 4.4,
+        "consumo_kw": 0.4,
+        "saldo_kw": 4.0
+    },
+    {
+        "timestamp": "2026-06-04 19:49:11",
+        "geracao_kw": 4.4,
+        "consumo_kw": 1.2,
+        "saldo_kw": 3.2
+    }
+]

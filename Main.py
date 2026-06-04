@@ -107,6 +107,14 @@ if __name__ == "__main__":
                     janela.atualizar_visual_botao(nome_alvo)
                     janela.adicionar_recomendacao_log(f"IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}).")
                     
+                    # 🔌 INTEGRAÇÃO HARDWARE: Envia sinal de corte físico ao Arduino via Serial
+                    if nome_alvo == "Iluminação Sala" and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
+                        try:
+                            arduino_serial.serial.write(b"DESLIGAR\n")
+                            print("[SERIAL] Comando de corte físico 'DESLIGAR' enviado para a lâmpada.")
+                        except Exception as e:
+                            print(f"[SERIAL] Falha ao enviar comando para o Arduino: {e}")
+
                     if hasattr(tela_cargas, 'atualizar_interface_externa'):
                         tela_cargas.atualizar_interface_externa(nome_alvo, False)
                     elif hasattr(tela_cargas, 'config_cargas') and nome_alvo in tela_cargas.config_cargas:
@@ -149,6 +157,14 @@ if __name__ == "__main__":
                         janela.atualizar_visual_botao(nome_alvo)
                         janela.adicionar_recomendacao_log(f"IA: Restabelecendo '{nome_alvo}'.")
                         
+                        # 🔌 INTEGRAÇÃO HARDWARE: Envia sinal de religamento físico ao Arduino via Serial
+                        if nome_alvo == "Iluminação Sala" and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
+                            try:
+                                arduino_serial.serial.write(b"LIGAR\n")
+                                print("[SERIAL] Comando de religamento físico 'LIGAR' enviado para a lâmpada.")
+                            except Exception as e:
+                                print(f"[SERIAL] Falha ao enviar comando para o Arduino: {e}")
+
                         if hasattr(tela_cargas, 'atualizar_interface_externa'):
                             tela_cargas.atualizar_interface_externa(nome_alvo, True)
                         elif hasattr(tela_cargas, 'config_cargas') and nome_alvo in tela_cargas.config_cargas:
@@ -200,13 +216,10 @@ if __name__ == "__main__":
     
     janela.timer.timeout.connect(executar_algoritmo_cortes_ia)
 
-    
     if hasattr(janela, 'btn_alternar_simulacao'):
         def alternar_estado_simulacao():
-            # Inverte o estado lógico
             janela.simulacao_ativa = not janela.simulacao_ativa
             
-            # Atualiza o visual do botão baseado no estado
             if janela.simulacao_ativa:
                 janela.btn_alternar_simulacao.setText("Simulação: ATIVA 🟢")
                 janela.btn_alternar_simulacao.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; border-radius: 5px; padding: 8px; margin: 5px;")
