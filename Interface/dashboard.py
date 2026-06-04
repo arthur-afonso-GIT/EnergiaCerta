@@ -335,14 +335,16 @@ class DashboardEnergia(QMainWindow):
         btn_novo.clicked.connect(lambda: self.abrir_menu_contexto_carga(nome_carrega))
 
     def atualizar_visual_botao(self, nome):
-        if nome not in self.config_cargas: return
+        if nome not in self.config_cargas: 
+            return
         info = self.config_cargas[nome]
-        if info["btn"] is None: return
+
+        if info.get("btn") is None: 
+            return
+            
         tipo = "[CRÍTICA]" if info["critica"] else "[SELETIVA]"
         pot = info["potencia"]
         prio = info.get("prioridade", 1)
-        
-        # 🔢 Exibe o nível de prioridade no botão para o usuário ver
         prio_txt = f" [Prio: {prio}]" if not info["critica"] else ""
         
         if info["ativo"]:
