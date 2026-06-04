@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QInputDialog, QMessageBox
 
 from Interface.dashboard import DashboardEnergia 
 from Core import comunicacao_serial 
@@ -31,6 +31,7 @@ if __name__ == "__main__":
     janela.cargas_desligadas_pela_ia = [] 
 
     janela.simulacao_ativa = True 
+    janela.nome_carga_hardware = "Iluminação Sala"  # Nome padrão inicial
 
     def executar_algoritmo_cortes_ia():
         """Gerencia cortes inteligentes de cargas com base em prioridades."""
@@ -107,13 +108,14 @@ if __name__ == "__main__":
                     janela.atualizar_visual_botao(nome_alvo)
                     janela.adicionar_recomendacao_log(f"IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}).")
                     
-                    # 🔌 INTEGRAÇÃO HARDWARE: Envia sinal de corte físico ao Arduino via Serial
-                    if nome_alvo == "Iluminação Sala" and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
+                    # 🔌 GATILHO SERIAL HARDWARE DINÂMICO
+                    nome_alvo_hardware = getattr(janela, 'nome_carga_hardware', 'Iluminação Sala')
+                    if nome_alvo == nome_alvo_hardware and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
                         try:
                             arduino_serial.serial.write(b"DESLIGAR\n")
-                            print("[SERIAL] Comando de corte físico 'DESLIGAR' enviado para a lâmpada.")
+                            print(f"[SERIAL] Comando físico 'DESLIGAR' enviado para {nome_alvo_hardware}.")
                         except Exception as e:
-                            print(f"[SERIAL] Falha ao enviar comando para o Arduino: {e}")
+                            print(f"[SERIAL] Erro ao enviar comando de desligamento: {e}")
 
                     if hasattr(tela_cargas, 'atualizar_interface_externa'):
                         tela_cargas.atualizar_interface_externa(nome_alvo, False)
@@ -157,13 +159,14 @@ if __name__ == "__main__":
                         janela.atualizar_visual_botao(nome_alvo)
                         janela.adicionar_recomendacao_log(f"IA: Restabelecendo '{nome_alvo}'.")
                         
-                        # 🔌 INTEGRAÇÃO HARDWARE: Envia sinal de religamento físico ao Arduino via Serial
-                        if nome_alvo == "Iluminação Sala" and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
+                        # 🔌 GATILHO SERIAL HARDWARE DINÂMICO
+                        nome_alvo_hardware = getattr(janela, 'nome_carga_hardware', 'Iluminação Sala')
+                        if nome_alvo == nome_alvo_hardware and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
                             try:
                                 arduino_serial.serial.write(b"LIGAR\n")
-                                print("[SERIAL] Comando de religamento físico 'LIGAR' enviado para a lâmpada.")
+                                print(f"[SERIAL] Comando físico 'LIGAR' enviado para {nome_alvo_hardware}.")
                             except Exception as e:
-                                print(f"[SERIAL] Falha ao enviar comando para o Arduino: {e}")
+                                print(f"[SERIAL] Erro ao enviar comando de religamento: {e}")
 
                         if hasattr(tela_cargas, 'atualizar_interface_externa'):
                             tela_cargas.atualizar_interface_externa(nome_alvo, True)
@@ -253,6 +256,54 @@ if __name__ == "__main__":
         """)
     except AttributeError:
         print("Erro: Verifique a configuração do componente '.abas'.")
+
+    # 🔌 POP-UP PLUG AND PLAY: Executa logo antes de abrir a janela principal
+    if hasattr(arduino_serial, 'conectado') and arduino_serial.conectado:
+        nome_carga_real, ok = QInputDialog.getText(
+            janela, 
+            "🔌 Hardware Detectado!", 
+            "Arduino conectado com sucesso!\nDigite um nome para identificar a carga física:",
+            text="Lâmpada Demonstração"
+        )
+        
+        if ok and nome_carga_real.strip():
+            nome_carga_real = nome_carga_real.strip()
+            
+            # Tenta colher uma leitura padrão do sensor ACS712
+            potencia_inicial = 0.05
+            try:
+                if hasattr(arduino_serial, 'serial') and arduino_serial.serial.in_waiting > 0:
+                    linha = arduino_serial.serial.readline().decode('utf-8').strip()
+                    corrente = float(linha)
+                    if corrente > 0.03:
+                        potencia_inicial = round((220.0 * corrente) / 1000.0, 2)
+            except Exception:
+                pass
+
+            # Injeta a nova carga física no sistema
+            janela.config_cargas[nome_carga_real] = {
+                "potencia": max(0.05, potencia_inicial),
+                "critica": False,
+                "ativo": True,
+                "prioridade": 2,
+                "btn": None
+            }
+            
+            salvar_dados(janela.config_cargas)
+            janela.nome_carga_hardware = nome_carga_real  # Vincula o filtro da IA ao novo nome
+            
+            QMessageBox.information(
+                janela, 
+                "Sucesso!", 
+                f"A carga física '{nome_carga_real}' foi cadastrada e associada ao controle da IA!"
+            )
+
+    # Força a interface a carregar os botões laterais com o dicionário atualizado
+    if hasattr(janela, 'reconstruir_lista_cargas_laterais'):
+        janela.reconstruir_lista_cargas_laterais()
+    else:
+        for nome_c in janela.config_cargas.keys():
+            janela.atualizar_visual_botao(nome_c)
 
     janela.show()
     sys.exit(app.exec())
