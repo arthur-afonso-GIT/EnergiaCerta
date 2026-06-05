@@ -2,7 +2,7 @@ import math
 import random
 
 class LeitorArduino:
-    def __init__(self, porta="COM3", baudrate=9600):
+    def __init__(self, porta="COM8", baudrate=9600):
         self.porta = porta
         self.baudrate = baudrate
         self.conectado = False

@@ -2,19 +2,19 @@
     "Geladeira": {
         "potencia": 0.8,
         "critica": true,
-        "ativo": true,
+        "ativo": false,
         "prioridade": 1
     },
     "Iluminação Sala": {
         "potencia": 0.3,
         "critica": true,
-        "ativo": true,
+        "ativo": false,
         "prioridade": 1
     },
     "Roteador Internet": {
         "potencia": 0.1,
         "critica": true,
-        "ativo": true,
+        "ativo": false,
         "prioridade": 1
     },
     "Ar-Condicionado": {
