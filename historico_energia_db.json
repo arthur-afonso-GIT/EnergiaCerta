@@ -1,23 +1,5 @@
 [
     {
-        "timestamp": "2026-06-04 20:39:49",
-        "geracao_kw": 0.0,
-        "consumo_kw": 0.0,
-        "saldo_kw": 0.0
-    },
-    {
-        "timestamp": "2026-06-04 20:39:51",
-        "geracao_kw": 0.0,
-        "consumo_kw": 0.0,
-        "saldo_kw": 0.0
-    },
-    {
-        "timestamp": "2026-06-04 20:39:53",
-        "geracao_kw": 0.0,
-        "consumo_kw": 0.0,
-        "saldo_kw": 0.0
-    },
-    {
         "timestamp": "2026-06-04 20:39:55",
         "geracao_kw": 0.0,
         "consumo_kw": 0.0,
@@ -5995,6 +5977,24 @@
     },
     {
         "timestamp": "2026-06-04 21:42:27",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 21:42:30",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 21:42:31",
+        "geracao_kw": 0.0,
+        "consumo_kw": 0.0,
+        "saldo_kw": 0.0
+    },
+    {
+        "timestamp": "2026-06-04 21:42:34",
         "geracao_kw": 0.0,
         "consumo_kw": 0.0,
         "saldo_kw": 0.0
