@@ -7,9 +7,9 @@
     },
     "Iluminação Sala": {
         "potencia": 0.3,
-        "critica": true,
-        "ativo": true,
-        "prioridade": 1
+        "critica": false,
+        "ativo": false,
+        "prioridade": 2
     },
     "Roteador Internet": {
         "potencia": 0.1,
@@ -21,30 +21,18 @@
         "potencia": 2.0,
         "critica": false,
         "ativo": false,
-        "prioridade": 1
+        "prioridade": 3
     },
     "Bomba D'água": {
         "potencia": 1.2,
         "critica": false,
         "ativo": false,
-        "prioridade": 3
+        "prioridade": 2
     },
     "Computador": {
         "potencia": 0.5,
         "critica": false,
         "ativo": false,
-        "prioridade": 2
-    },
-    "123": {
-        "potencia": 0.024,
-        "critica": false,
-        "ativo": false,
         "prioridade": 1
-    },
-    "Carga Arduino": {
-        "potencia": 0.026,
-        "critica": false,
-        "ativo": false,
-        "prioridade": 3
     }
 }
