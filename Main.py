@@ -1,47 +1,192 @@
 import sys
-from PySide6.QtWidgets import QApplication, QInputDialog, QMessageBox
+from PySide6.QtWidgets import (QApplication, QDialog, QVBoxLayout, QHBoxLayout,
+                                QLabel, QLineEdit, QPushButton, QDoubleSpinBox,
+                                QCheckBox, QComboBox, QFormLayout)
+from PySide6.QtCore import Qt
 
 from Interface.dashboard import DashboardEnergia 
-from Core import comunicacao_serial 
+from Core.comunicacao_serial import MonitorConexaoArduino
 from Core.banco_dados import carregar_dados, salvar_dados, registrar_historico_energia
 from Interface.abas.aba_cargas import AbaCargas
 from Interface.abas.aba_baterias import AbaBaterias  
 from Interface.abas.aba_ia import AbaIA
 from Interface.abas.aba_graficos import AbaGraficos
 
+
+class PopupNovaCargarArduino(QDialog):
+    """
+    Popup que aparece quando o Arduino conecta na COM8.
+    Permite nomear a carga física detectada e configurar prioridade.
+    """
+    def __init__(self, corrente_kw, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("🔌 Arduino Detectado!")
+        self.setFixedWidth(380)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+        self.setStyleSheet("""
+            QDialog { background-color: #1A1A1A; color: white; }
+            QLabel { color: #FFFFFF; font-size: 12px; }
+            QLineEdit, QDoubleSpinBox, QComboBox {
+                background-color: #252525; border: 1px solid #444; padding: 6px;
+                color: white; border-radius: 4px; font-size: 12px;
+            }
+            QCheckBox { color: #B0BEC5; font-size: 11px; }
+        """)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(15)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        # Cabeçalho
+        lbl_titulo = QLabel("⚡ Arduino conectado na COM8!")
+        lbl_titulo.setStyleSheet("font-size: 15px; font-weight: bold; color: #00E676;")
+        layout.addWidget(lbl_titulo)
+
+        lbl_sub = QLabel(
+            f"Corrente detectada: <b style='color:#00E676'>{corrente_kw:.3f} kW</b><br>"
+            "Configure a carga física abaixo para adicioná-la ao sistema."
+        )
+        lbl_sub.setWordWrap(True)
+        lbl_sub.setStyleSheet("color: #AAAAAA; font-size: 11px;")
+        layout.addWidget(lbl_sub)
+
+        # Formulário
+        form = QFormLayout()
+        form.setSpacing(10)
+
+        self.txt_nome = QLineEdit()
+        self.txt_nome.setText("Carga Arduino")
+        self.txt_nome.setPlaceholderText("Ex: Bancada Lab, Motor, Freezer...")
+        form.addRow("Nome da carga:", self.txt_nome)
+
+        self.spin_potencia = QDoubleSpinBox()
+        self.spin_potencia.setRange(0.001, 50.0)
+        self.spin_potencia.setDecimals(3)
+        self.spin_potencia.setSuffix(" kW")
+        self.spin_potencia.setValue(round(corrente_kw, 3))
+        self.spin_potencia.setToolTip("Valor inicial lido do Arduino. Pode ajustar manualmente.")
+        form.addRow("Potência inicial:", self.spin_potencia)
+
+        self.chk_critica = QCheckBox("Imune a cortes automáticos (Crítica)")
+        form.addRow("Tipo:", self.chk_critica)
+
+        self.combo_prio = QComboBox()
+        self.combo_prio.addItems(["1 – Cai Primeiro", "2 – Média", "3 – Cai por Último"])
+        self.chk_critica.toggled.connect(lambda c: self.combo_prio.setDisabled(c))
+        form.addRow("Prioridade IA:", self.combo_prio)
+
+        layout.addLayout(form)
+
+        # Botões
+        layout_btns = QHBoxLayout()
+        self.btn_cancelar = QPushButton("Ignorar")
+        self.btn_cancelar.setStyleSheet(
+            "QPushButton { background:#2D2D2D; color:#888; border:1px solid #444; "
+            "padding:8px 16px; border-radius:4px; }"
+            "QPushButton:hover { background:#3D3D3D; }"
+        )
+        self.btn_cancelar.clicked.connect(self.reject)
+
+        self.btn_adicionar = QPushButton("➕ Adicionar ao Sistema")
+        self.btn_adicionar.setStyleSheet(
+            "QPushButton { background:#00E676; color:#121212; font-weight:bold; "
+            "padding:8px 16px; border-radius:4px; border:none; }"
+            "QPushButton:hover { background:#00C865; }"
+        )
+        self.btn_adicionar.clicked.connect(self.accept)
+        self.btn_adicionar.setDefault(True)
+
+        layout_btns.addWidget(self.btn_cancelar)
+        layout_btns.addWidget(self.btn_adicionar)
+        layout.addLayout(layout_btns)
+
+    def obter_dados(self):
+        return (
+            self.txt_nome.text().strip() or "Carga Arduino",
+            self.spin_potencia.value(),
+            self.combo_prio.currentIndex() + 1,
+            self.chk_critica.isChecked()
+        )
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    
-    arduino_serial = comunicacao_serial
-    
+
+    # Inicia o monitor de Arduino em background (não trava o app)
+    monitor_arduino = MonitorConexaoArduino(porta="COM3", baudrate=9600)
+
     janela = DashboardEnergia()
     janela.config_cargas = carregar_dados()
-    
-    if hasattr(janela, 'abas') and janela.abas.count() > 1:
-        janela.abas.removeTab(1) 
 
-    tela_cargas = AbaCargas(arduino_serial=arduino_serial, dashboard_principal=janela)
-    tela_baterias = AbaBaterias()  
+    # Injeta referência do monitor no dashboard para leitura no loop
+    janela.monitor_arduino = monitor_arduino
+
+    if hasattr(janela, 'abas') and janela.abas.count() > 1:
+        janela.abas.removeTab(1)
+
+    tela_cargas = AbaCargas(arduino_serial=monitor_arduino, dashboard_principal=janela)
+    tela_baterias = AbaBaterias()
     tela_ia = AbaIA()
     tela_graficos = AbaGraficos()
-    
+
     janela.aba_bateria = tela_baterias
-    
-    janela.ciclos_em_defice = 0 
-    janela.cargas_desligadas_pela_ia = [] 
+    janela.ciclos_em_defice = 0
+    janela.cargas_desligadas_pela_ia = []
+    # Nome da carga do Arduino (None = nenhuma registrada ainda)
+    janela.nome_carga_arduino = None
 
-    janela.simulacao_ativa = True 
-    janela.nome_carga_hardware = "Iluminação Sala"  # Nome padrão inicial
+    # ------------------------------------------------------------------
+    # POPUP: Aparece quando o Arduino conectar na COM8
+    # ------------------------------------------------------------------
+    def ao_arduino_conectar(corrente_kw):
+        """Chamado pela thread quando o Arduino é detectado."""
+        popup = PopupNovaCargarArduino(corrente_kw, parent=janela)
+        if popup.exec() == QDialog.Accepted:
+            nome, potencia, prioridade, eh_critica = popup.obter_dados()
 
+            # Se já tinha uma carga do Arduino antes, remove a antiga
+            if janela.nome_carga_arduino and janela.nome_carga_arduino in janela.config_cargas:
+                btn_antigo = janela.config_cargas[janela.nome_carga_arduino].get("btn")
+                if btn_antigo:
+                    janela.layout_cargas.removeWidget(btn_antigo)
+                    btn_antigo.deleteLater()
+                del janela.config_cargas[janela.nome_carga_arduino]
+
+            # Garante nome único
+            nome_final = nome
+            contador = 2
+            while nome_final in janela.config_cargas:
+                nome_final = f"{nome} ({contador})"
+                contador += 1
+
+            # Registra no config central
+            janela.config_cargas[nome_final] = {
+                "critica": eh_critica,
+                "potencia": potencia,
+                "ativo": True,
+                "btn": None,
+                "prioridade": prioridade,
+                "arduino": True   # flag para o loop saber que deve usar leitura real
+            }
+            janela.nome_carga_arduino = nome_final
+
+            # Cria botão na aba principal e persiste
+            janela.criar_e_adicionar_botao_na_tela(nome_final)
+            salvar_dados(janela.config_cargas)
+            janela.adicionar_recomendacao_log(
+                f"🔌 Arduino: Carga '{nome_final}' ({potencia:.3f} kW) registrada via COM8."
+            )
+
+            # Atualiza a aba de Cargas Críticas
+            if hasattr(tela_cargas, 'sincronizar_com_monitoramento_geral'):
+                tela_cargas.sincronizar_com_monitoramento_geral()
+
+    monitor_arduino.arduino_conectado.connect(ao_arduino_conectar)
+
+    # ------------------------------------------------------------------
+    # ALGORITMO DE CORTES DA IA
+    # ------------------------------------------------------------------
     def executar_algoritmo_cortes_ia():
-        """Gerencia cortes inteligentes de cargas com base em prioridades."""
-        
-        if not getattr(janela, "simulacao_ativa", True):
-            if hasattr(janela, 'lbl_bateria_status'):
-                janela.lbl_bateria_status.setText("Simulacao Pausada")
-                janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #888888; font-weight: bold; border: none;")
-            return
-
         geracao = 0.0
         if hasattr(janela, 'lbl_val_geracao'):
             try:
@@ -50,9 +195,9 @@ if __name__ == "__main__":
                 geracao = 0.0
 
         soc_bateria = 100.0
-        if hasattr(tela_baterias, 'lbl_soc_valor'): 
+        if hasattr(tela_baterias, 'soc_atual'):
             try:
-                soc_bateria = float(tela_baterias.lbl_soc_valor.text().replace("%", "").strip())
+                soc_bateria = float(tela_baterias.soc_atual)
             except ValueError:
                 pass
         elif hasattr(janela, 'lbl_bateria_status'):
@@ -67,7 +212,7 @@ if __name__ == "__main__":
         for nome_carga, info in janela.config_cargas.items():
             if info["ativo"]:
                 consumo += info["potencia"]
-                
+
         saldo = geracao - consumo
         meta_limite = janela.sld_meta_consumo.value() / 10.0
 
@@ -75,7 +220,7 @@ if __name__ == "__main__":
 
         if saldo < 0 or consumo > meta_limite or soc_bateria < 30.0:
             janela.ciclos_em_defice += 1
-            
+
             if hasattr(janela, 'lbl_bateria_status'):
                 if soc_bateria <= 30.0:
                     janela.lbl_bateria_status.setText(f"Bateria Crítica ({soc_bateria:.1f}%)! Cortando Cargas...")
@@ -89,41 +234,29 @@ if __name__ == "__main__":
                     (nome, info) for nome, info in janela.config_cargas.items()
                     if not info.get("critica", False) and info.get("ativo", True)
                 ]
-                
+
                 if cargas_para_cortar:
                     cargas_para_cortar.sort(key=lambda x: (x[1].get("prioridade", 1), x[1]["potencia"]))
-                    
+
                     nome_alvo, info_alvo = cargas_para_cortar[0]
                     potencia_carga = info_alvo["potencia"]
                     prio_atual = info_alvo.get("prioridade", 1)
-                    
+
                     print(f"[IA] Cortando dispositivo: {nome_alvo} ({potencia_carga}kW)")
-                    
+
                     janela.config_cargas[nome_alvo]["ativo"] = False
                     if nome_alvo not in janela.cargas_desligadas_pela_ia:
                         janela.cargas_desligadas_pela_ia.append(nome_alvo)
-                    
+
                     salvar_dados(janela.config_cargas)
-                    
                     janela.atualizar_visual_botao(nome_alvo)
                     janela.adicionar_recomendacao_log(f"IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}).")
-                    
-                    # 🔌 GATILHO SERIAL HARDWARE DINÂMICO
-                    nome_alvo_hardware = getattr(janela, 'nome_carga_hardware', 'Iluminação Sala')
-                    if nome_alvo == nome_alvo_hardware and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
-                        try:
-                            arduino_serial.serial.write(b"DESLIGAR\n")
-                            print(f"[SERIAL] Comando físico 'DESLIGAR' enviado para {nome_alvo_hardware}.")
-                        except Exception as e:
-                            print(f"[SERIAL] Erro ao enviar comando de desligamento: {e}")
 
                     if hasattr(tela_cargas, 'atualizar_interface_externa'):
                         tela_cargas.atualizar_interface_externa(nome_alvo, False)
-                    elif hasattr(tela_cargas, 'config_cargas') and nome_alvo in tela_cargas.config_cargas:
-                        tela_cargas.config_cargas[nome_alvo]["ativo"] = False
-                    
+
                     sincronizar_mudanca_no_dashboard(nome_alvo, False, potencia_carga)
-                    
+
                     saldo += potencia_carga
                     if saldo >= 0 and (consumo - potencia_carga) <= meta_limite:
                         janela.ciclos_em_defice = 0
@@ -131,7 +264,7 @@ if __name__ == "__main__":
 
         elif saldo > 0 and len(janela.cargas_desligadas_pela_ia) > 0 and soc_bateria > 40.0:
             janela.ciclos_em_defice = 0
-            
+
             if hasattr(janela, 'lbl_bateria_status'):
                 janela.lbl_bateria_status.setText("Sistema Normalizado: Sobra Solar")
                 janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
@@ -140,104 +273,76 @@ if __name__ == "__main__":
                 (nome, janela.config_cargas[nome]) for nome in janela.cargas_desligadas_pela_ia
                 if nome in janela.config_cargas and not janela.config_cargas[nome]["ativo"]
             ]
-            
+
             if cargas_para_religar:
                 cargas_para_religar.sort(key=lambda x: x[1].get("prioridade", 1))
-                
+
                 for nome_alvo, info_alvo in cargas_para_religar:
                     potencia_carga = info_alvo["potencia"]
                     prio_atual = info_alvo.get("prioridade", 1)
-                    
+
                     if saldo > (potencia_carga + 0.3) and (consumo + potencia_carga) <= meta_limite:
                         print(f"[IA] Religando dispositivo: {nome_alvo}")
-                        
+
                         janela.config_cargas[nome_alvo]["ativo"] = True
                         janela.cargas_desligadas_pela_ia.remove(nome_alvo)
-                        
+
                         salvar_dados(janela.config_cargas)
-                        
                         janela.atualizar_visual_botao(nome_alvo)
                         janela.adicionar_recomendacao_log(f"IA: Restabelecendo '{nome_alvo}'.")
-                        
-                        # 🔌 GATILHO SERIAL HARDWARE DINÂMICO
-                        nome_alvo_hardware = getattr(janela, 'nome_carga_hardware', 'Iluminação Sala')
-                        if nome_alvo == nome_alvo_hardware and hasattr(arduino_serial, 'serial') and arduino_serial.conectado:
-                            try:
-                                arduino_serial.serial.write(b"LIGAR\n")
-                                print(f"[SERIAL] Comando físico 'LIGAR' enviado para {nome_alvo_hardware}.")
-                            except Exception as e:
-                                print(f"[SERIAL] Erro ao enviar comando de religamento: {e}")
 
                         if hasattr(tela_cargas, 'atualizar_interface_externa'):
                             tela_cargas.atualizar_interface_externa(nome_alvo, True)
-                        elif hasattr(tela_cargas, 'config_cargas') and nome_alvo in tela_cargas.config_cargas:
-                            tela_cargas.config_cargas[nome_alvo]["ativo"] = True
-                        
+
                         sincronizar_mudanca_no_dashboard(nome_alvo, True, potencia_carga)
                         return
 
-
     def sincronizar_mudanca_no_dashboard(nome_carga, esta_ativo, consumo_kw):
-        status_simbolo = "[LIGADO]" if esta_ativo else "[DESLIGADO]"
-        print("="*60)
+        print("=" * 60)
         print(f"SISTEMA CENTRAL | MONITORAMENTO")
         print(f"   Dispositivo: {nome_carga}")
-        print(f"   Operação: {status_simbolo}")
+        print(f"   Operação: {'[LIGADO]' if esta_ativo else '[DESLIGADO]'}")
         print(f"   Impacto: {consumo_kw:.2f} kW")
-        print("="*60)
-        
+        print("=" * 60)
+
         if hasattr(janela, 'atualizar_status_carga_lateral'):
             janela.atualizar_status_carga_lateral(nome_carga, esta_ativo)
-            
+
         consumo_total = sum(info["potencia"] for info in janela.config_cargas.values() if info["ativo"])
-            
+
         if hasattr(janela, 'lbl_val_consumo'):
             janela.lbl_val_consumo.setText(f"{consumo_total:.1f} kW")
-            
+
         if hasattr(janela, 'lbl_val_saldo') and hasattr(janela, 'lbl_val_geracao'):
             try:
-                geraca_atual = float(janela.lbl_val_geracao.text().replace(" kW", "").strip())
-                balanco = geraca_atual - consumo_total
+                geracao_atual = float(janela.lbl_val_geracao.text().replace(" kW", "").strip())
+                balanco = geracao_atual - consumo_total
                 janela.lbl_val_saldo.setText(f"{balanco:.1f} kW")
             except ValueError:
                 pass
-                
+
         if consumo_total > 4.0:
             print(f"ALERTA DE PICOS: Consumo total atingiu {consumo_total:.1f} kW!")
-            print("="*60)
+            print("=" * 60)
 
         if hasattr(janela, 'statusBar') and janela.statusBar():
             status_cor = "ativada" if esta_ativo else "desativada"
             janela.statusBar().showMessage(f"Carga '{nome_carga}' foi {status_cor}.", 4000)
-                    
+
         if hasattr(tela_graficos, 'atualizar_consumo_grafico'):
             tela_graficos.atualizar_consumo_grafico(consumo_total)
 
-
     if hasattr(tela_cargas, 'carga_alterada'):
         tela_cargas.carga_alterada.connect(sincronizar_mudanca_no_dashboard)
-    
-    janela.timer.timeout.connect(executar_algoritmo_cortes_ia)
 
-    if hasattr(janela, 'btn_alternar_simulacao'):
-        def alternar_estado_simulacao():
-            janela.simulacao_ativa = not janela.simulacao_ativa
-            
-            if janela.simulacao_ativa:
-                janela.btn_alternar_simulacao.setText("Simulação: ATIVA 🟢")
-                janela.btn_alternar_simulacao.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; border-radius: 5px; padding: 8px; margin: 5px;")
-            else:
-                janela.btn_alternar_simulacao.setText("Simulação: PAUSADA 🔴")
-                janela.btn_alternar_simulacao.setStyleSheet("background-color: #C62828; color: white; font-weight: bold; border-radius: 5px; padding: 8px; margin: 5px;")
-                
-        janela.btn_alternar_simulacao.clicked.connect(alternar_estado_simulacao)
+    janela.timer.timeout.connect(executar_algoritmo_cortes_ia)
 
     try:
         janela.abas.addTab(tela_cargas, "⚙️ Cargas Críticas")
-        janela.abas.addTab(tela_baterias, "🔋 Banco de Baterias")  
+        janela.abas.addTab(tela_baterias, "🔋 Banco de Baterias")
         janela.abas.addTab(tela_graficos, "📈 Gráficos de Desempenho")
         janela.abas.addTab(tela_ia, "🧠 Recomendações e IA")
-        
+
         janela.setStyleSheet("""
             QTabBar::tab {
                 background: #1E1E1E;
@@ -257,53 +362,12 @@ if __name__ == "__main__":
     except AttributeError:
         print("Erro: Verifique a configuração do componente '.abas'.")
 
-    # 🔌 POP-UP PLUG AND PLAY: Executa logo antes de abrir a janela principal
-    if hasattr(arduino_serial, 'conectado') and arduino_serial.conectado:
-        nome_carga_real, ok = QInputDialog.getText(
-            janela, 
-            "🔌 Hardware Detectado!", 
-            "Arduino conectado com sucesso!\nDigite um nome para identificar a carga física:",
-            text="Lâmpada Demonstração"
-        )
-        
-        if ok and nome_carga_real.strip():
-            nome_carga_real = nome_carga_real.strip()
-            
-            # Tenta colher uma leitura padrão do sensor ACS712
-            potencia_inicial = 0.05
-            try:
-                if hasattr(arduino_serial, 'serial') and arduino_serial.serial.in_waiting > 0:
-                    linha = arduino_serial.serial.readline().decode('utf-8').strip()
-                    corrente = float(linha)
-                    if corrente > 0.03:
-                        potencia_inicial = round((220.0 * corrente) / 1000.0, 2)
-            except Exception:
-                pass
-
-            # Injeta a nova carga física no sistema
-            janela.config_cargas[nome_carga_real] = {
-                "potencia": max(0.05, potencia_inicial),
-                "critica": False,
-                "ativo": True,
-                "prioridade": 2,
-                "btn": None
-            }
-            
-            salvar_dados(janela.config_cargas)
-            janela.nome_carga_hardware = nome_carga_real  # Vincula o filtro da IA ao novo nome
-            
-            QMessageBox.information(
-                janela, 
-                "Sucesso!", 
-                f"A carga física '{nome_carga_real}' foi cadastrada e associada ao controle da IA!"
-            )
-
-    # Força a interface a carregar os botões laterais com o dicionário atualizado
-    if hasattr(janela, 'reconstruir_lista_cargas_laterais'):
-        janela.reconstruir_lista_cargas_laterais()
-    else:
-        for nome_c in janela.config_cargas.keys():
-            janela.atualizar_visual_botao(nome_c)
+    # Inicia o monitor em background DEPOIS de tudo pronto
+    monitor_arduino.start()
 
     janela.show()
-    sys.exit(app.exec())
+    
+    resultado = app.exec()
+    monitor_arduino.parar()
+    monitor_arduino.wait()
+    sys.exit(resultado)

@@ -14,7 +14,7 @@ class CardCarga(QFrame):
         self.callback_hardware = callback_hardware
         self.sinal_atualizacao = sinal_atualizacao
         self.aba_pai = aba_pai
-        self.ativo = True
+        self.ativo = True # Inicia ativo por padrão
         
         self.setObjectName("CardCarga")
         self.setFrameShape(QFrame.StyledPanel)
@@ -42,16 +42,19 @@ class CardCarga(QFrame):
         self.lbl_consumo.setStyleSheet("font-size: 12px; color: #888888; background: transparent; margin-top: 2px;")
         layout.addWidget(self.lbl_consumo)
         
+        # --- ⚙️ ÁREA DE CONFIGURAÇÃO DE GERENCIAMENTO DA IA ---
         config_layout = QHBoxLayout()
-        config_layout.setSpacing(10)
+        config_layout.setSpacing(10)  # Espaçamento ideal        
         
-        self.chk_critica = QCheckBox("Critica")
+        # Checkbox para definir se é imune a cortes (Crítica)
+        self.chk_critica = QCheckBox("Crítica")
         self.chk_critica.setChecked(self.eh_critica)
         self.chk_critica.setStyleSheet("color: #B0BEC5; font-size: 11px; background: transparent;")
         self.chk_critica.toggled.connect(self.alternar_tipo_critica)
         
+        # Menu de prioridade (1 a 3)
         self.combo_prio = QComboBox()
-        self.combo_prio.addItems(["Prio 1 (Cai por Ultimo)", "Prio 2", "Prio 3 (Cai Primeiro)"])
+        self.combo_prio.addItems(["Prio 1 (Cai Primeiro)", "Prio 2", "Prio 3 (Cai por Último)"])
         self.combo_prio.setCurrentIndex(max(0, min(2, self.prioridade - 1)))
         self.combo_prio.setStyleSheet("""
             QComboBox { background-color: #252525; color: white; border: 1px solid #444; border-radius: 3px; padding: 2px 5px; font-size: 11px; }
@@ -67,6 +70,7 @@ class CardCarga(QFrame):
         
         layout.addStretch()
         
+        # --- BOTÃO DE ACIONAMENTO MANUAL ---
         self.btn_alternar = QPushButton("Desativar Carga")
         self.btn_alternar.setCursor(Qt.PointingHandCursor)
         self.btn_alternar.clicked.connect(self.alternar_estado)
@@ -88,9 +92,10 @@ class CardCarga(QFrame):
                 dash.config_cargas[self.nome]["critica"] = checked
                 dash.atualizar_visual_botao(self.nome)
                 dash.adicionar_recomendacao_log(
-                    f"Cards: '{self.nome}' reconfigurado como {'CRITICA' if checked else 'SELETIVA'}."
+                    f"⚙️ Cards: '{self.nome}' reconfigurado como {'CRÍTICA' if checked else 'SELETIVA'}."
                 )
                 
+                # 💾 SALVA NO BANCO DE DADOS JSON
                 from Core.banco_dados import salvar_dados
                 salvar_dados(dash.config_cargas)
 
@@ -105,9 +110,10 @@ class CardCarga(QFrame):
                 dash.config_cargas[self.nome]["prioridade"] = nova_prio
                 dash.atualizar_visual_botao(self.nome)
                 dash.adicionar_recomendacao_log(
-                    f"Cards: Alterada prioridade de '{self.nome}' para {nova_prio}."
+                    f"⚙️ Cards: Alterada prioridade de '{self.nome}' para {nova_prio}."
                 )
                 
+                # 💾 SALVA NO BANCO DE DADOS JSON
                 from Core.banco_dados import salvar_dados
                 salvar_dados(dash.config_cargas)
 

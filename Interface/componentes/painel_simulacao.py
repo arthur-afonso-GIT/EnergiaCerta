@@ -11,7 +11,7 @@ class PainelSimulacaoDecisao(QWidget):
         self.layout_principal = QVBoxLayout(self)
         self.layout_principal.setSpacing(15)
         
-        lbl_titulo = QLabel("Simulacao de Decisao e Economia")
+        lbl_titulo = QLabel("Simulação de Decisão e Economia")
         lbl_titulo.setStyleSheet("font-size: 14px; font-weight: bold; color: #FFFFFF; border: none; background: transparent;")
         lbl_titulo.setAlignment(Qt.AlignCenter)
         self.layout_principal.addWidget(lbl_titulo)
@@ -31,7 +31,7 @@ class PainelSimulacaoDecisao(QWidget):
         self.slider_limite.valueChanged.connect(self.atualizar_valor_slider)
         self.layout_principal.addWidget(self.slider_limite)
         
-        lbl_testes = QLabel("Simular Cenarios do Sistema:")
+        lbl_testes = QLabel("Simular Cenários do Sistema:")
         lbl_testes.setStyleSheet("font-size: 12px; color: #AAAAAA; border: none; background: transparent; margin-top: 10px;")
         self.layout_principal.addWidget(lbl_testes)
         
@@ -69,12 +69,12 @@ class PainelSimulacaoDecisao(QWidget):
         if self.disparar_alerta:
             self.disparar_alerta(
                 "Alerta de Sobrecarga", 
-                "Consumo ultrapassou a meta definida! Executando corte automatico de cargas nao criticas."
+                "Consumo ultrapassou a meta definida! Executando corte automático de cargas não críticas."
             )
             
     def acao_simular_sol(self):
         if self.disparar_alerta:
             self.disparar_alerta(
-                "Superavit Energetico", 
-                "Geracao solar cobrindo 100% da demanda. Iniciando carregamento das baterias."
+                "Superávit Energético", 
+                "Geração solar cobrindo 100% da demanda. Iniciando carregamento das baterias."
             )

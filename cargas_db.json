@@ -2,19 +2,19 @@
     "Geladeira": {
         "potencia": 0.8,
         "critica": true,
-        "ativo": false,
+        "ativo": true,
         "prioridade": 1
     },
     "Iluminação Sala": {
         "potencia": 0.3,
         "critica": true,
-        "ativo": false,
+        "ativo": true,
         "prioridade": 1
     },
     "Roteador Internet": {
         "potencia": 0.1,
         "critica": true,
-        "ativo": false,
+        "ativo": true,
         "prioridade": 1
     },
     "Ar-Condicionado": {
@@ -34,5 +34,17 @@
         "critica": false,
         "ativo": false,
         "prioridade": 2
+    },
+    "123": {
+        "potencia": 0.024,
+        "critica": false,
+        "ativo": false,
+        "prioridade": 1
+    },
+    "Carga Arduino": {
+        "potencia": 0.026,
+        "critica": false,
+        "ativo": false,
+        "prioridade": 3
     }
 }

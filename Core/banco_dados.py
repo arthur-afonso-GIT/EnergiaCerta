@@ -2,11 +2,14 @@ import os
 import json
 from datetime import datetime
 
+# Caminhos dos Bancos de Dados em JSON
 DB_CARGAS_PATH = os.path.join(os.path.dirname(__file__), "..", "cargas_db.json")
 DB_HISTORICO_PATH = os.path.join(os.path.dirname(__file__), "..", "historico_energia_db.json")
 
+# --- FUNÇÕES DAS CARGAS (Já existentes) ---
+
 def carregar_dados():
-    """Carrega as configuracoes das cargas do arquivo JSON."""
+    """Carrega as configurações das cargas do arquivo JSON."""
     if os.path.exists(DB_CARGAS_PATH):
         try:
             with open(DB_CARGAS_PATH, "r", encoding="utf-8") as f:
@@ -25,7 +28,7 @@ def carregar_dados():
     }
 
 def salvar_dados(dados):
-    """Salva as configuracoes atuais das cargas no JSON limpando referencias do Qt."""
+    """Salva as configurações atuais das cargas no JSON limpando referências do Qt."""
     dados_limpos = {}
     for nome, info in dados.items():
         dados_limpos[nome] = {
@@ -41,8 +44,10 @@ def salvar_dados(dados):
         print(f"Erro ao salvar banco de cargas: {e}")
 
 
+# --- 📊 NOVO: FUNÇÕES DO HISTÓRICO DE ENERGIA ---
+
 def registrar_historico_energia(geracao, consumo):
-    """Salva uma leitura de geracao e consumo com a data e hora atual no JSON."""
+    """Salva uma leitura de geração e consumo com a data e hora atual no JSON."""
     historico = []
     if os.path.exists(DB_HISTORICO_PATH):
         try:
@@ -51,6 +56,7 @@ def registrar_historico_energia(geracao, consumo):
         except Exception:
             historico = []
 
+    # Estrutura a nova linha do tempo
     nova_leitura = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "geracao_kw": round(float(geracao), 2),
@@ -60,6 +66,7 @@ def registrar_historico_energia(geracao, consumo):
     
     historico.append(nova_leitura)
     
+    # Mantém o arquivo leve limitando o histórico aos últimos 1000 registros
     if len(historico) > 1000:
         historico = historico[-1000:]
         

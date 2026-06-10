@@ -47,7 +47,7 @@ class PainelBateria(QWidget):
         layout_principal.addLayout(container_cards)
 
         # Terminal de telemetria da bateria
-        lbl_diag_tit = QLabel("Historico de Ciclos e Saude do Banco")
+        lbl_diag_tit = QLabel("📋 Histórico de Ciclos e Saúde do Banco")
         lbl_diag_tit.setStyleSheet("font-size: 11px; font-weight: bold; color: #00ACC1; margin-top: 15px;")
         layout_principal.addWidget(lbl_diag_tit)
 
@@ -65,18 +65,21 @@ class PainelBateria(QWidget):
 
     def atualizar_dados_bateria(self, geracao, consumo):
         """
-        Gerencia o fluxo fisico da bateria com base na geracao solar e consumo da casa.
+        Gerencia o fluxo físico da bateria com base na geração solar e consumo da casa.
         Retorna:
-            - saldo_final_rede (float): O que sobra ou falta para a concessionaria de energia
-            - energia_movimentada (float): Potencia atual de carga (+) ou descarga (-)
+            - saldo_final_rede (float): O que sobra ou falta para a concessionária de energia
+            - energia_movimentada (float): Potência atual de carga (+) ou descarga (-)
         """
+        # Cálculo do balanço inicial da casa
         saldo_bruto = geracao - consumo
         energia_movimentada = 0.0
         
-        taxa_maxima_potencia = 1.5
-        soc_minimo = 10.0
-        soc_maximo = 100.0
+        # Parâmetros físicos reais da bateria
+        taxa_maxima_potencia = 1.5  # Máximo de kWh que a bateria consegue puxar/injetar por ciclo
+        soc_minimo = 10.0            # Margem de segurança para não danificar a bateria (10%)
+        soc_maximo = 100.0           # Limite superior de carga (100%)
 
+        # --- CASO 1: SOBRA ENERGIA (Geração > Consumo) -> Carregar Bateria ---
         if saldo_bruto > 0:
             if self.bateria_soc < soc_maximo:
                 # Descobre quanto espaço livre ainda existe em kWh na bateria
@@ -105,15 +108,21 @@ class PainelBateria(QWidget):
             deficit_necessario = abs(saldo_bruto)
             
             if self.bateria_soc > soc_minimo:
+                # Descobre quanta energia útil em kWh a bateria ainda tem disponível acima do limite de 10%
                 energia_disponivel_kwh = ((self.bateria_soc - soc_minimo) / 100.0) * self.capacidade_total
                 
+                # A descarga real será o menor valor entre: o déficit da casa, a potência máxima de descarga ou a energia disponível
                 energia_movimentada = min(deficit_necessario, taxa_maxima_potencia, energia_disponivel_kwh)
                 
+                # Deduz os kWh gastos do SoC da bateria
                 self.bateria_soc -= (energia_movimentada / self.capacidade_total) * 100.0
                 self.bateria_soc = max(soc_minimo, self.bateria_soc)
             
+            # O saldo final que precisamos comprar da concessionária é o déficit MENOS o que a bateria conseguiu suprir
+            # Como é um déficit, mantemos o sinal negativo para a rede externa
             saldo_final_rede = round(- (deficit_necessario - energia_movimentada), 1)
             
+            # Atualiza interface da bateria (Modo Descarga)
             if energia_movimentada > 0:
                 self.lbl_fluxo_val.setText(f"-{energia_movimentada:.1f} kWh (Descarregando)")
                 self.lbl_fluxo_val.setStyleSheet("font-size: 20px; font-weight: bold; color: #FFC107; border: none;")
