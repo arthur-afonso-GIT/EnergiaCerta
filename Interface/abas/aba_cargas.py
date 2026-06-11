@@ -118,6 +118,7 @@ class CardCarga(QFrame):
                 salvar_dados(dash.config_cargas)
 
     def sincronizar_mudanca_com_sistema(self):
+        # 1. Atualiza o visual do próprio CardCarga
         if self.ativo:
             self.lbl_status_led.setText("● ATIVO")
             self.lbl_status_led.setStyleSheet("font-size: 11px; font-weight: bold; color: #00E676; background: transparent;")
@@ -128,7 +129,7 @@ class CardCarga(QFrame):
         self.update_card_style()
         self.update_button_style()
         
-        # Comunicação com o Hardware
+        # 2. Comunicação com o Hardware (Arduino)
         if self.callback_hardware:
             try:
                 comando = f"{'LIGAR' if self.ativo else 'DESLIGAR'}_{self.nome.replace(' ', '')}\n"
@@ -136,20 +137,25 @@ class CardCarga(QFrame):
             except Exception as e:
                 print(f"Erro de Hardware: {e}")
 
-        # Envia sinal de atualização para o resto do sistema
-        if self.sinal_atualizacao:
-            self.sinal_atualizacao.emit(self.nome, self.ativo, self.consumo)
-            
-        # Sincroniza direto o estado booleano com a tela principal
+        # 3. ATUALIZAÇÃO DIRETA DO DASHBOARD (garantia primária — não depende de .connect)
+        #    Chama atualizar_status_carga_lateral diretamente no Dashboard.
+        #    Esse método é idempotente: setar o mesmo estado duas vezes não causa dano.
+        #    Isso garante que o dict, o botão lateral e os KPIs sejam atualizados
+        #    mesmo que o Main.py não tenha feito o .connect do sinal.
         if self.aba_pai and self.aba_pai.dashboard_principal:
             dash = self.aba_pai.dashboard_principal
+            print(f"[CardCarga] Atualizando dashboard diretamente → '{self.nome}' | ativo={self.ativo}")
             dash.atualizar_status_carga_lateral(self.nome, self.ativo)
-            
-            # 💾 SALVA NO BANCO DE DADOS JSON (Mudança manual de ligar/desligar)
+            # Salva no JSON após a mudança ser confirmada no dict
             if self.nome in dash.config_cargas:
-                dash.config_cargas[self.nome]["ativo"] = self.ativo
                 from Core.banco_dados import salvar_dados
                 salvar_dados(dash.config_cargas)
+
+        # 4. Emite o sinal para propagação secundária (gráficos, IA, etc no Main.py)
+        #    O sinal é adicional à atualização direta acima, não substituto.
+        if self.sinal_atualizacao:
+            print(f"[CardCarga] Emitindo sinal → '{self.nome}' | ativo={self.ativo}")
+            self.sinal_atualizacao.emit(self.nome, self.ativo, self.consumo)
 
     def update_card_style(self):
         borda_cor = "#00E676" if self.ativo else "#2D2D2D"

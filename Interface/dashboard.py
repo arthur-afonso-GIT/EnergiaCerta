@@ -1,6 +1,7 @@
 import os
 import math
 import random
+import re
 from collections import deque
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                                QLabel, QToolButton, QMenu, QSystemTrayIcon, 
@@ -42,25 +43,26 @@ class DashboardEnergia(QMainWindow):
             self.tray_icon.setIcon(QIcon(caminho_logo))
         self.tray_icon.show()
         
-        # 📈 Vetores de Histórico e Variáveis de Controle
+        # 📈 Vetores de Histórico e Variáveis de Controle Global do Estado do Sistema
         self.hora_atual = 10.0
         self.historico_horas = []
         self.historico_consumo = []
         self.historico_geracao = []
         
+        # Variáveis Globais unificadas compartilhadas com a Main
+        self.consumo_atual = 0.0
+        self.geracao_atual = 0.0
+        self.saldo_atual = 0.0
+        
         # Otimização: Uso de deque com maxlen garante controle de memória cronológico rígido
         self._ultimas_mensagens_ia = deque(maxlen=10)
         
-        # 🧠 Base de Dados Inicializada com Prioridades Padrão (Alteráveis pelo Usuário)
-        # Prioridade: 1 = Cai Primeiro, 3 = Segura mais tempo ligado antes de cair
-        self.config_cargas = {
-            "Geladeira": {"critica": True, "potencia": 0.8, "ativo": True, "btn": None, "prioridade": 3},
-            "Iluminação Sala": {"critica": True, "potencia": 0.3, "ativo": True, "btn": None, "prioridade": 3},
-            "Roteador Internet": {"critica": True, "potencia": 0.1, "ativo": True, "btn": None, "prioridade": 3},
-            "Bomba D'água": {"critica": False, "potencia": 1.2, "ativo": True, "btn": None, "prioridade": 1},
-            "Computador": {"critica": False, "potencia": 0.5, "ativo": True, "btn": None, "prioridade": 2},
-            "Ar-Condicionado": {"critica": False, "potencia": 2.0, "ativo": True, "btn": None, "prioridade": 3}
-        }
+        # 🧠 Base de Dados Única — preenchida pelo Main.py via carregar_dados()
+        # NÃO inicializar aqui com dados fixos: o Main.py faz a atribuição canônica
+        # logo após a construção do objeto. Inicializar aqui criaria um segundo dict
+        # que seria sobrescrito pela atribuição externa, corrompendo as referências
+        # já armazenadas nos botões da lista lateral.
+        self.config_cargas = {}  # ← fonte de verdade única; populada pelo Main.py
         
         # ======================================================================
         # 🧱 CONSTRUÇÃO DOS LAYOUTS DA ABA PRINCIPAL
@@ -122,9 +124,9 @@ class DashboardEnergia(QMainWindow):
         self.scroll_area.setWidget(self.widget_lista_cargas)
         layout_container_vertical.addWidget(self.scroll_area)
         
-        # Popula os botões originais das cargas
-        for nome in list(self.config_cargas.keys()):
-            self.criar_e_adicionar_botao_na_tela(nome)
+        # Os botões laterais são criados em popular_lista_lateral(),
+        # chamado pelo Main.py APÓS janela.config_cargas = carregar_dados().
+        # Não chamar aqui: o dict ainda está vazio neste ponto.
         
         # Bloco Inferior: Box de Feedback rápido de decisões
         self.painel_recomendacoes = QWidget()
@@ -285,19 +287,39 @@ class DashboardEnergia(QMainWindow):
                 self.txt_historico_decisoes.ensureCursorVisible()
                 self._ultimas_mensagens_ia.append(mensagem)
                 
-                # 🔔 SISTEMA DE NOTIFICAÇÕES CORRIGIDO (Sem 'message' em inglês)
+                # 🔔 SISTEMA DE NOTIFICAÇÕES
                 if hasattr(self, 'notificar_alerta'):
                     if any(x in mensagem for x in ["🚨", "⚠️", "Decisão", "Configuração"]):
                         self.notificar_alerta("IA: Gerenciamento Ativo", mensagem)
                     elif any(x in mensagem for x in ["💡", "Sugestão"]):
                         self.notificar_alerta("IA: Sugestão de Economia", mensagem)
                         
-                        
     def closeEvent(self, event):
         print("Finalizando aplicação e liberando recursos...")
         if hasattr(self, 'timer') and self.timer.isActive():
             self.timer.stop()
         event.accept()
+
+    # ======================================================================
+    # 🔄 INICIALIZAÇÃO TARDIA — chamada pelo Main.py após carregar_dados()
+    # ======================================================================
+    def popular_lista_lateral(self):
+        """
+        Cria os botões da lista lateral a partir de self.config_cargas.
+        Deve ser chamado pelo Main.py DEPOIS de:
+            janela.config_cargas = carregar_dados()
+        para garantir que os botões apontem para o dict correto.
+        """
+        # Limpa botões residuais (segurança contra dupla chamada)
+        while self.layout_cargas.count():
+            item = self.layout_cargas.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+        # Reseta referências de btn no próprio dict antes de recriar
+        for info in self.config_cargas.values():
+            info["btn"] = None
+        for nome in list(self.config_cargas.keys()):
+            self.criar_e_adicionar_botao_na_tela(nome)
 
     def criar_card_kpi(self, titulo, valor_inicial, cor_borda):
         card = QWidget()
@@ -328,7 +350,6 @@ class DashboardEnergia(QMainWindow):
         pot = info["potencia"]
         prio = info.get("prioridade", 1)
         
-        # 🔢 Exibe o nível de prioridade no botão para o usuário ver
         prio_txt = f" [Prio: {prio}]" if not info["critica"] else ""
         
         if info["ativo"]:
@@ -351,7 +372,6 @@ class DashboardEnergia(QMainWindow):
         acao_tipo.triggered.connect(lambda: self.alternar_tipo_critica(nome))
         menu.addAction(acao_tipo)
 
-        # 🔢 NOVO: Permite alterar a prioridade das cargas seletivas dinamicamente
         if not self.config_cargas[nome]["critica"]:
             acao_prioridade = QAction("🔢 Alterar Nível de Prioridade", self)
             acao_prioridade.triggered.connect(lambda: self.alterar_prioridade_manual(nome))
@@ -362,18 +382,13 @@ class DashboardEnergia(QMainWindow):
         acao_remover.triggered.connect(lambda: self.excluir_carga(nome))
         menu.addAction(acao_remover)
         
-        # 🔥 CORREÇÃO SEGURA: Verifica se o botão "btn" existe na interface gráfica
         botao_visual = self.config_cargas[nome].get("btn")
         if botao_visual is not None:
-            # Se o botão existe, abre o menu colado nele (comportamento original)
             menu.exec(botao_visual.mapToGlobal(botao_visual.rect().bottomLeft()))
         else:
-            # Fallback seguro: se o botão ainda for None (vindo do JSON), 
-            # abre o menu exatamente onde o ponteiro do mouse clicou!
             from PySide6.QtGui import QCursor
             menu.exec(QCursor.pos())
 
-    # 🔢 NOVO: Processa a caixa de diálogo de prioridades das cargas existentes
     def alterar_prioridade_manual(self, nome):
         prio_atual = self.config_cargas[nome].get("prioridade", 1)
         nova_prio, ok = QInputDialog.getInt(
@@ -387,9 +402,15 @@ class DashboardEnergia(QMainWindow):
             self.adicionar_recomendacao_log(f"Configuração: Prioridade de '{nome}' alterada para {nova_prio}.")
 
     def alternar_carga_manual(self, nome):
-        self.config_cargas[nome]["ativo"] = not self.config_cargas[nome]["ativo"]
-        self.atualizar_visual_botao(nome)
-        self.adicionar_recomendacao_log(f"Controle Manual: '{nome}' alterado para {'Ativo' if self.config_cargas[nome]['ativo'] else 'Desligado'}.")
+        novo_estado = not self.config_cargas[nome]["ativo"]
+        # Delega ao método centralizado que atualiza dict + botão + KPIs
+        self.atualizar_status_carga_lateral(nome, novo_estado)
+        self.adicionar_recomendacao_log(
+            f"Controle Manual: '{nome}' alterado para {'Ativo' if novo_estado else 'Desligado'}."
+        )
+        # Salva apenas após a mudança confirmada
+        from Core.banco_dados import salvar_dados
+        salvar_dados(self.config_cargas)
 
     def alternar_tipo_critica(self, nome):
         self.config_cargas[nome]["critica"] = not self.config_cargas[nome]["critica"]
@@ -405,7 +426,6 @@ class DashboardEnergia(QMainWindow):
             del self.config_cargas[nome]
             self.adicionar_recomendacao_log(f"Remoção: Dispositivo '{nome}' excluído do banco do sistema.")
 
-    # 🔢 ATUALIZADO: Cadastro de Novas Cargas perguntando prioridades
     def abrir_dialogo_adicionar_carga(self):
         nome, ok1 = QInputDialog.getText(self, "Nova Carga", "Nome do Aparelho:")
         if not ok1 or not nome.strip(): return
@@ -437,9 +457,59 @@ class DashboardEnergia(QMainWindow):
         self.adicionar_recomendacao_log(f"Cadastro: Nova carga '{nome}' adicionada ({potencia} kW) | Prioridade: {prioridade}.")
 
     def atualizar_status_carga_lateral(self, nome_carga, esta_ativo):
-        if nome_carga in self.config_cargas:
-            self.config_cargas[nome_carga]["ativo"] = esta_ativo
-            self.atualizar_visual_botao(nome_carga)
+        """
+        Ponto único de entrada para mudanças de estado vindas de qualquer fonte
+        (CardCarga, IA, Arduino). Atualiza: dict → botão lateral → KPIs.
+        """
+        if nome_carga not in self.config_cargas:
+            print(f"[SYNC] AVISO: '{nome_carga}' não encontrado em config_cargas. "
+                  f"Chaves: {list(self.config_cargas.keys())}")
+            return
+
+        # 1. Atualiza a fonte de verdade
+        self.config_cargas[nome_carga]["ativo"] = esta_ativo
+
+        # 2. Atualiza o botão da lista lateral imediatamente
+        self.atualizar_visual_botao(nome_carga)
+
+        # 3. Recalcula e exibe os KPIs imediatamente (sem aguardar o timer)
+        self._recalcular_kpis_imediato()
+
+        print(f"[SYNC] '{nome_carga}' → {'ATIVO' if esta_ativo else 'DESLIGADO'} | "
+              f"Consumo agora: {self.consumo_atual:.2f} kW | Saldo: {self.saldo_atual:.2f} kW")
+
+    def _recalcular_kpis_imediato(self):
+        """
+        Recalcula consumo e saldo com base no estado atual de config_cargas
+        e atualiza os labels KPI do topo imediatamente.
+        Chamado sempre que uma carga é ligada/desligada manualmente ou pela IA.
+        """
+        import random
+        novo_consumo = sum(
+            info["potencia"]
+            for info in self.config_cargas.values()
+            if info.get("ativo", True)
+        )
+        novo_consumo = round(max(0.2, novo_consumo), 2)
+
+        # Mantém a geração já calculada pelo loop; recalcula só o saldo
+        nova_geracao = self.geracao_atual
+        novo_saldo = round(nova_geracao - novo_consumo, 2)
+
+        # Persiste nas variáveis globais
+        self.consumo_atual = novo_consumo
+        self.saldo_atual = novo_saldo
+
+        # Atualiza os labels KPI imediatamente
+        self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kW")
+        sinal = "+" if novo_saldo > 0 else ""
+        self.lbl_val_saldo.setText(f"{sinal}{novo_saldo:.1f} kW")
+        if novo_saldo >= 0:
+            self.lbl_val_saldo.setStyleSheet(
+                "font-size: 22px; font-weight: bold; color: #00E676; border: none; background: transparent;")
+        else:
+            self.lbl_val_saldo.setStyleSheet(
+                "font-size: 22px; font-weight: bold; color: #E53935; border: none; background: transparent;")
 
     # ======================================================================
     # 🔄 LOOP DE PROCESSAMENTO EM TEMPO REAL OPERACIONAL
@@ -453,30 +523,37 @@ class DashboardEnergia(QMainWindow):
             texto_hora = f"{horas_inteiras:02d}:{minutos:02d}"
 
             # 📊 2. CÁLCULO SEGURO DO CONSUMO REAL DA CASA
-            # Soma o consumo simulado de todas as cargas ativas
             novo_consumo = sum(info["potencia"] for info in self.config_cargas.values() if info.get("ativo", True))
             novo_consumo = round(max(0.2, novo_consumo + random.uniform(-0.08, 0.08)), 2)
 
             # ⚡ 2b. SOMA DO VALOR REAL DO ARDUINO (se conectado)
-            # A carga do Arduino já está em config_cargas com a potência inicial do popup.
-            # Aqui sobrescrevemos essa potência com a leitura em tempo real do sensor,
-            # garantindo que o consumo reflita o valor atual medido pelo hardware.
             monitor = getattr(self, 'monitor_arduino', None)
             nome_arduino = getattr(self, 'nome_carga_arduino', None)
             if monitor and monitor.conectado and nome_arduino and nome_arduino in self.config_cargas:
                 corrente_real = monitor.ler_corrente_atual()
                 if corrente_real > 0:
-                    # Atualiza a potência da carga Arduino com a leitura real
                     potencia_anterior = self.config_cargas[nome_arduino]["potencia"]
                     self.config_cargas[nome_arduino]["potencia"] = corrente_real
-                    # Ajusta o consumo total: remove a potência antiga e adiciona a real
                     if self.config_cargas[nome_arduino].get("ativo", True):
                         novo_consumo = novo_consumo - potencia_anterior + corrente_real
                         novo_consumo = round(max(0.2, novo_consumo), 2)
 
-            # ☀️ 3. SIMULAÇÃO DA CURVA DA GERAÇÃO FOTOVOLTAICA
-            fator_solar = math.sin(math.pi * (self.hora_atual - 6.0) / 12.0) if 6.0 <= self.hora_atual <= 18.0 else 0.0
-            nova_geracao = round(4.5 * fator_solar + random.uniform(-0.03, 0.03), 2) if fator_solar > 0 else 0.0
+            # ☀️ 3. SIMULAÇÃO DA CURVA DA GERAÇÃO FOTOVOLTAICA (Com trava para simulação externa ativa)
+            geracao_externa = None
+            if hasattr(self, 'painel_simulacao') and self.painel_simulacao is not None:
+                if getattr(self.painel_simulacao, 'chk_simular', None) and self.painel_simulacao.chk_simular.isChecked():
+                    if hasattr(self.painel_simulacao, 'geracao_atual'):
+                        geracao_externa = float(self.painel_simulacao.geracao_atual)
+            
+            if geracao_externa is None and hasattr(self, 'simulador') and self.simulador is not None:
+                if hasattr(self.simulador, 'geracao_atual'):
+                    geracao_externa = float(self.simulador.geracao_atual)
+
+            if geracao_externa is not None and geracao_externa > 0.0:
+                nova_geracao = round(geracao_externa, 2)
+            else:
+                fator_solar = math.sin(math.pi * (self.hora_atual - 6.0) / 12.0) if 6.0 <= self.hora_atual <= 18.0 else 0.0
+                nova_geracao = round(4.5 * fator_solar + random.uniform(-0.03, 0.03), 2) if fator_solar > 0 else 0.0
 
             # 🔋 4. INTEGRAÇÃO PREMIUM DO BALANÇO DE BATERIAS
             instancia_bateria = getattr(self, 'aba_baterias', None) or getattr(self, 'aba_bateria', None)
@@ -502,6 +579,11 @@ class DashboardEnergia(QMainWindow):
             # ⚡ 5. CÁLCULO MATEMÁTICO REAL DO SALDO DA REDE EXTERNA
             saldo_rede_externa = round(nova_geracao - novo_consumo - fluxo_bateria, 2)
             eficiencia_porcentagem = min(100, int((nova_geracao / novo_consumo) * 100)) if novo_consumo > 0 else 100
+
+            # Armazena em variáveis globais estáveis e limpas para a Main ler sem erros de string
+            self.consumo_atual = novo_consumo
+            self.geracao_atual = nova_geracao
+            self.saldo_atual = saldo_rede_externa
 
             # 📈 6. ATUALIZAÇÃO DOS HISTÓRICOS DO GRÁFICO CENTRAL
             self.historico_horas.append(texto_hora)
@@ -553,22 +635,8 @@ class DashboardEnergia(QMainWindow):
                     <p style='color: #FF9800; font-size: 14px;'><b>⚡ Diagnóstico de Ouro:</b> {dica_ia}</p>
                 """)
 
-            if self.aba_graficos:
-                if hasattr(self.aba_graficos, 'update_plot'):
-                    self.aba_graficos.update_plot(novo_consumo, nova_geracao)
-                elif hasattr(self.aba_graficos, 'atualizar_linhas'):
-                    self.aba_graficos.atualizar_linhas(self.historico_horas, self.historico_consumo, self.historico_geracao)
-
-            # 📝 Atualização Preditiva das caixas informativas do painel direito
-            if nova_geracao > 2.0:
-                self.lbl_carga_status.setText("Excelência Solar das 11h às 14h")
-                self.lbl_bateria_status.setText("Modo: Armazenamento Ativo")
-            else:
-                self.lbl_carga_status.setText("Moderação recomendada")
-                self.lbl_bateria_status.setText("Modo: Descarregamento Seguro")
-
-            if self.lbl_decisao_texto:
-                self.lbl_decisao_texto.setText(f"⏱️ [{texto_hora}] Fluxo Coberto: {eficiencia_porcentagem}% | Bateria: {soc_atual_bateria:.1f}%")
+            if self.aba_graficos and hasattr(self.aba_graficos, 'update_plot'):
+                self.aba_graficos.update_plot(novo_consumo, nova_geracao)
 
         except Exception as e:
-            print(f"Erro no processamento do loop central do dashboard: {e}")
+            print(f"Erro no loop do dashboard: {e}")
