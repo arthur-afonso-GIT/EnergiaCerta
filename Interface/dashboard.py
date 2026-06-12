@@ -484,7 +484,6 @@ class DashboardEnergia(QMainWindow):
         e atualiza os labels KPI do topo imediatamente.
         Chamado sempre que uma carga é ligada/desligada manualmente ou pela IA.
         """
-        import random
         novo_consumo = sum(
             info["potencia"]
             for info in self.config_cargas.values()
@@ -500,8 +499,21 @@ class DashboardEnergia(QMainWindow):
         self.consumo_atual = novo_consumo
         self.saldo_atual = novo_saldo
 
-        # Atualiza os labels KPI imediatamente
+        # --- LOG DE DIAGNÓSTICO (remover após validar) ---
+        print(f"[KPI] GERAÇÃO ATUAL   : {nova_geracao:.2f} kW  (self.geracao_atual)")
+        print(f"[KPI] CONSUMO ATUAL   : {novo_consumo:.2f} kW")
+        print(f"[KPI] SALDO CALCULADO : {novo_saldo:.2f} kW")
+        print(f"[KPI] lbl_geracao antes: {self.lbl_val_geracao.text()}")
+        # --------------------------------------------------
+
+        # Atualiza os três labels KPI imediatamente
         self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kW")
+
+        # ✅ CORREÇÃO: lbl_val_geracao estava ausente — geração ficava congelada
+        # até o próximo tick do timer (2 s). Agora é atualizado junto com
+        # consumo e saldo sempre que uma carga muda de estado.
+        self.lbl_val_geracao.setText(f"{nova_geracao:.1f} kW")
+
         sinal = "+" if novo_saldo > 0 else ""
         self.lbl_val_saldo.setText(f"{sinal}{novo_saldo:.1f} kW")
         if novo_saldo >= 0:
@@ -510,6 +522,12 @@ class DashboardEnergia(QMainWindow):
         else:
             self.lbl_val_saldo.setStyleSheet(
                 "font-size: 22px; font-weight: bold; color: #E53935; border: none; background: transparent;")
+
+        # --- LOG DE DIAGNÓSTICO (remover após validar) ---
+        print(f"[KPI] lbl_geracao depois: {self.lbl_val_geracao.text()}")
+        print(f"[KPI] lbl_saldo  depois: {self.lbl_val_saldo.text()}")
+        print("─" * 50)
+        # --------------------------------------------------
 
     # ======================================================================
     # 🔄 LOOP DE PROCESSAMENTO EM TEMPO REAL OPERACIONAL
@@ -544,16 +562,20 @@ class DashboardEnergia(QMainWindow):
                 if getattr(self.painel_simulacao, 'chk_simular', None) and self.painel_simulacao.chk_simular.isChecked():
                     if hasattr(self.painel_simulacao, 'geracao_atual'):
                         geracao_externa = float(self.painel_simulacao.geracao_atual)
-            
+
             if geracao_externa is None and hasattr(self, 'simulador') and self.simulador is not None:
                 if hasattr(self.simulador, 'geracao_atual'):
                     geracao_externa = float(self.simulador.geracao_atual)
 
             if geracao_externa is not None and geracao_externa > 0.0:
                 nova_geracao = round(geracao_externa, 2)
+                # --- LOG DE DIAGNÓSTICO ---
+                print(f"[LOOP-GER] Fonte: simulador externo → {nova_geracao:.2f} kW")
             else:
                 fator_solar = math.sin(math.pi * (self.hora_atual - 6.0) / 12.0) if 6.0 <= self.hora_atual <= 18.0 else 0.0
                 nova_geracao = round(4.5 * fator_solar + random.uniform(-0.03, 0.03), 2) if fator_solar > 0 else 0.0
+                # --- LOG DE DIAGNÓSTICO ---
+                print(f"[LOOP-GER] Fonte: senoidal (hora={self.hora_atual:.1f}h) → {nova_geracao:.2f} kW")
 
             # 🔋 4. INTEGRAÇÃO PREMIUM DO BALANÇO DE BATERIAS
             instancia_bateria = getattr(self, 'aba_baterias', None) or getattr(self, 'aba_bateria', None)
@@ -614,13 +636,17 @@ class DashboardEnergia(QMainWindow):
             # 📺 7. ATUALIZAÇÃO RENDERIZADA DOS DISPLAYS KPI DO TOPO
             self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kW")
             self.lbl_val_geracao.setText(f"{nova_geracao:.1f} kW")
-            
+            # --- LOG DE DIAGNÓSTICO ---
+            print(f"[LOOP-KPI] lbl_geracao → {self.lbl_val_geracao.text()} | lbl_saldo → antes de calc")
+
             sinal = "+" if saldo_rede_externa > 0 else ""
             self.lbl_val_saldo.setText(f"{sinal}{saldo_rede_externa:.1f} kW")
             if saldo_rede_externa >= 0:
                 self.lbl_val_saldo.setStyleSheet("font-size: 22px; font-weight: bold; color: #00E676; border: none; background: transparent;")
             else:
                 self.lbl_val_saldo.setStyleSheet("font-size: 22px; font-weight: bold; color: #E53935; border: none; background: transparent;")
+            # --- LOG DE DIAGNÓSTICO ---
+            print(f"[LOOP-KPI] lbl_saldo  → {self.lbl_val_saldo.text()}")
 
             # 🧠 8. ALIMENTAÇÃO DINÂMICA DAS EXTENSÕES MODULARES (IA E GRÁFICOS)
             if self.aba_ia and hasattr(self.aba_ia, 'setHtml'):

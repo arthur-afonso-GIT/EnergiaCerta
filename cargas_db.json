@@ -20,7 +20,7 @@
     "Ar-Condicionado": {
         "potencia": 2.0,
         "critica": false,
-        "ativo": false,
+        "ativo": true,
         "prioridade": 3
     },
     "Bomba D'água": {

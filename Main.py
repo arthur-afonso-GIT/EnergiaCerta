@@ -191,107 +191,187 @@ if __name__ == "__main__":
     # ALGORITMO DE CORTES DA IA (ESTRUTURA INTELIGENTE E DE DECISÃO PURA)
     # ------------------------------------------------------------------
     def executar_algoritmo_cortes_ia():
-        # 1. COLETA AS INFORMAÇÕES DIRETAMENTE DAS VARIÁVEIS MATEMÁTICAS UNIFICADAS DO DASHBOARD
-        geracao = getattr(janela, 'geracao_atual', 0.0)
-        consumo = getattr(janela, 'consumo_atual', 0.0)
-        saldo = getattr(janela, 'saldo_atual', 0.0)
+        # ─────────────────────────────────────────────────────────────────
+        # 1. COLETA DE DADOS
+        # Calcula consumo diretamente do dict (fonte de verdade), independente
+        # do saldo_atual que pode estar inflado pelo fluxo da bateria.
+        # ─────────────────────────────────────────────────────────────────
+        geracao  = getattr(janela, 'geracao_atual', 0.0)
+        consumo  = sum(
+            info["potencia"] for info in janela.config_cargas.values()
+            if info.get("ativo", True)
+        )
+        # Saldo real = geração - consumo (sem desconto de bateria).
+        # Usar este valor garante que a IA enxerga déficit real,
+        # não o saldo "tampado" pela bateria que o loop armazena em saldo_atual.
+        saldo_real = round(geracao - consumo, 2)
+
         meta_limite = janela.sld_meta_consumo.value() / 10.0
 
         soc_bateria = 100.0
         if hasattr(tela_baterias, 'soc_atual'):
             soc_bateria = float(tela_baterias.soc_atual)
 
-        # Salva o histórico energético atualizado no Banco de Dados com dados seguros
+        # Salva o histórico energético
         registrar_historico_energia(geracao, consumo)
 
-        # 2. Tomada de Decisão Baseada em Fatos e Balanço Seguro
-        if saldo < 0 or consumo > meta_limite or soc_bateria < 30.0:
+        # --- LOG DE DIAGNÓSTICO (remover após validar) ---
+        print(f"[IA-TICK] geracao={geracao:.2f} consumo={consumo:.2f} "
+              f"saldo_real={saldo_real:.2f} meta={meta_limite:.2f} soc={soc_bateria:.1f}%")
+        # -------------------------------------------------
+
+        # ─────────────────────────────────────────────────────────────────
+        # 2. CONDIÇÃO DE DÉFICIT
+        # Gatilhos independentes (qualquer um ativa o corte):
+        #   A) consumo supera a meta configurada pelo usuário
+        #   B) geração não cobre o consumo (déficit real, sem bateria)
+        #   C) bateria crítica (abaixo de 30%)
+        # ─────────────────────────────────────────────────────────────────
+        em_deficit = (consumo > meta_limite) or (saldo_real < 0) or (soc_bateria < 30.0)
+
+        if em_deficit:
             janela.ciclos_em_defice += 1
 
+            # Atualiza painel de status com motivo real
             if hasattr(janela, 'lbl_bateria_status'):
                 if soc_bateria <= 30.0:
                     janela.lbl_bateria_status.setText(f"Bateria Crítica ({soc_bateria:.1f}%)! Cortando Cargas...")
                     janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #E53935; font-weight: bold; border: none;")
+                elif consumo > meta_limite:
+                    janela.lbl_bateria_status.setText(f"Consumo {consumo:.1f} kW acima da meta {meta_limite:.1f} kW!")
+                    janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FF9800; font-weight: bold; border: none;")
                 else:
-                    janela.lbl_bateria_status.setText(f"Défice Detectado! Balanço: {saldo:.1f} kW")
+                    janela.lbl_bateria_status.setText(f"Déficit Real: {saldo_real:.1f} kW")
                     janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #FF9800; font-weight: bold; border: none;")
 
+            print(f"[IA-TICK] EM DÉFICIT — ciclos={janela.ciclos_em_defice}")
+
+            # Aguarda 1 ciclo confirmado antes de cortar (evita falso positivo em pico momentâneo)
             if janela.ciclos_em_defice >= 2:
                 cargas_para_cortar = [
                     (nome, info) for nome, info in janela.config_cargas.items()
                     if not info.get("critica", False) and info.get("ativo", True)
                 ]
 
+                print(f"[IA-TICK] Candidatas ao corte: {[n for n,_ in cargas_para_cortar]}")
+
                 if cargas_para_cortar:
-                    cargas_para_cortar.sort(key=lambda x: (x[1].get("prioridade", 1), x[1]["potencia"]))
+                    # Ordena: prio 1 cai primeiro (menor número = maior urgência de corte)
+                    # Desempate: maior potência cai primeiro (maior impacto no consumo)
+                    cargas_para_cortar.sort(
+                        key=lambda x: (x[1].get("prioridade", 1), -x[1]["potencia"])
+                    )
 
                     nome_alvo, info_alvo = cargas_para_cortar[0]
                     potencia_carga = info_alvo["potencia"]
                     prio_atual = info_alvo.get("prioridade", 1)
 
-                    print(f"[IA] Cortando dispositivo devido a sobrecarga real: {nome_alvo} ({potencia_carga}kW)")
+                    print(f"[IA] ✂️  DESLIGANDO '{nome_alvo}' | {potencia_carga} kW | Prio {prio_atual}")
 
-                    janela.config_cargas[nome_alvo]["ativo"] = False
+                    janela.atualizar_status_carga_lateral(nome_alvo, False)
+
                     if nome_alvo not in janela.cargas_desligadas_pela_ia:
                         janela.cargas_desligadas_pela_ia.append(nome_alvo)
 
                     salvar_dados(janela.config_cargas)
-                    janela.atualizar_visual_botao(nome_alvo)
-                    janela.adicionar_recomendacao_log(f"IA: Desligamento automático de '{nome_alvo}' (Prioridade {prio_atual}).")
+                    janela.adicionar_recomendacao_log(
+                        f"IA: Desligamento automático de '{nome_alvo}' "
+                        f"({potencia_carga:.2f} kW | Prio {prio_atual}) — "
+                        f"consumo={consumo:.2f} kW / meta={meta_limite:.2f} kW."
+                    )
 
                     if hasattr(tela_cargas, 'atualizar_interface_externa'):
                         tela_cargas.atualizar_interface_externa(nome_alvo, False)
 
+                    # Notifica Arduino se conectado
+                    if hasattr(tela_cargas, 'callback_envio') and tela_cargas.callback_envio:
+                        try:
+                            comando = f"DESLIGAR_{nome_alvo.replace(' ', '')}\n"
+                            tela_cargas.callback_envio(comando)
+                            print(f"[IA-HW] Arduino notificado: {comando.strip()}")
+                        except Exception as e:
+                            print(f"[IA-HW] Erro ao notificar Arduino: {e}")
+
                     sincronizar_mudanca_no_dashboard(nome_alvo, False, potencia_carga)
+                    # Reseta ciclos para não cortar outra carga no tick imediato seguinte
+                    janela.ciclos_em_defice = 0
                     return
 
-        elif saldo > 0 and len(janela.cargas_desligadas_pela_ia) > 0 and soc_bateria > 40.0:
-            janela.ciclos_em_defice = 0
+        else:
+            # Sistema normalizado — reseta contador de déficit
+            # (só reseta se realmente saiu do déficit, não se ficou em 0.0 exato)
+            if janela.ciclos_em_defice > 0:
+                janela.ciclos_em_defice = 0
+                print(f"[IA-TICK] Sistema normalizado. ciclos resetado.")
 
-            if hasattr(janela, 'lbl_bateria_status'):
-                janela.lbl_bateria_status.setText("Sistema Normalizado: Sobra Solar")
+            if hasattr(janela, 'lbl_bateria_status') and not janela.cargas_desligadas_pela_ia:
+                janela.lbl_bateria_status.setText("Sistema Estável")
                 janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
 
-            cargas_para_religar = [
-                (nome, janela.config_cargas[nome]) for nome in janela.cargas_desligadas_pela_ia
-                if nome in janela.config_cargas and not janela.config_cargas[nome]["ativo"]
-            ]
+            # ─────────────────────────────────────────────────────────────
+            # 3. RELIGAMENTO — só quando há folga real de geração
+            # ─────────────────────────────────────────────────────────────
+            if saldo_real > 0 and len(janela.cargas_desligadas_pela_ia) > 0 and soc_bateria > 40.0:
 
-            if cargas_para_religar:
-                cargas_para_religar.sort(key=lambda x: x[1].get("prioridade", 1))
+                if hasattr(janela, 'lbl_bateria_status'):
+                    janela.lbl_bateria_status.setText("Sistema Normalizado: Sobra Solar")
+                    janela.lbl_bateria_status.setStyleSheet("font-size: 11px; color: #4CAF50; font-weight: bold; border: none;")
 
-                for nome_alvo, info_alvo in cargas_para_religar:
-                    potencia_carga = info_alvo["potencia"]
+                cargas_para_religar = [
+                    (nome, janela.config_cargas[nome]) for nome in janela.cargas_desligadas_pela_ia
+                    if nome in janela.config_cargas and not janela.config_cargas[nome]["ativo"]
+                ]
 
-                    if saldo > (potencia_carga + 0.3) and (consumo + potencia_carga) <= meta_limite:
-                        print(f"[IA] Sobra de energia detectada. Religando dispositivo: {nome_alvo}")
+                if cargas_para_religar:
+                    cargas_para_religar.sort(key=lambda x: x[1].get("prioridade", 1))
 
-                        janela.config_cargas[nome_alvo]["ativo"] = True
-                        janela.cargas_desligadas_pela_ia.remove(nome_alvo)
+                    for nome_alvo, info_alvo in cargas_para_religar:
+                        potencia_carga = info_alvo["potencia"]
 
-                        salvar_dados(janela.config_cargas)
-                        janela.atualizar_visual_botao(nome_alvo)
-                        janela.adicionar_recomendacao_log(f"IA: Restabelecendo '{nome_alvo}'.")
+                        if saldo_real > (potencia_carga + 0.3) and (consumo + potencia_carga) <= meta_limite:
+                            print(f"[IA] 🔁 RELIGANDO '{nome_alvo}' | {potencia_carga} kW")
 
-                        if hasattr(tela_cargas, 'atualizar_interface_externa'):
-                            tela_cargas.atualizar_interface_externa(nome_alvo, True)
+                            janela.atualizar_status_carga_lateral(nome_alvo, True)
+                            janela.cargas_desligadas_pela_ia.remove(nome_alvo)
 
-                        sincronizar_mudanca_no_dashboard(nome_alvo, True, potencia_carga)
-                        return
+                            salvar_dados(janela.config_cargas)
+                            janela.adicionar_recomendacao_log(f"IA: Restabelecendo '{nome_alvo}'.")
+
+                            if hasattr(tela_cargas, 'atualizar_interface_externa'):
+                                tela_cargas.atualizar_interface_externa(nome_alvo, True)
+
+                            # Notifica Arduino se conectado
+                            if hasattr(tela_cargas, 'callback_envio') and tela_cargas.callback_envio:
+                                try:
+                                    comando = f"LIGAR_{nome_alvo.replace(' ', '')}\n"
+                                    tela_cargas.callback_envio(comando)
+                                    print(f"[IA-HW] Arduino notificado: {comando.strip()}")
+                                except Exception as e:
+                                    print(f"[IA-HW] Erro ao notificar Arduino: {e}")
+
+                            sincronizar_mudanca_no_dashboard(nome_alvo, True, potencia_carga)
+                            return
 
     # ------------------------------------------------------------------
     # RECEPTOR DO SINAL carga_alterada (emitido pelo CardCarga)
     # ------------------------------------------------------------------
-    def sincronizar_mudanca_no_dashboard(nome_carga, esta_ativo, consumo_kw):
+    def sincronizar_mudanca_no_dashboard(nome_carga, esta_ativo, consumo_kw=0.0):
         """
-        Receptor secundário do sinal carga_alterada.
-        O CardCarga já atualizou o dict e o Dashboard diretamente.
-        Aqui apenas propagamos para gráficos e outros módulos externos.
-        NÃO chamar atualizar_status_carga_lateral aqui (já foi feito).
+        Receptor SECUNDÁRIO do sinal carga_alterada emitido pelo CardCarga.
+
+        O CardCarga já chamou dash.atualizar_status_carga_lateral() diretamente
+        antes de emitir este sinal (aba_cargas.py linha 148), portanto:
+        - dict já está atualizado
+        - botão lateral já está atualizado
+        - KPIs (consumo, geração, saldo) já foram recalculados
+
+        Aqui apenas propagamos para módulos externos (gráficos, etc.)
+        e garantimos que o JSON foi salvo.
+        NÃO chamar atualizar_status_carga_lateral aqui — causaria duplo recálculo.
         """
         print(f"[SIGNAL] carga_alterada recebido → '{nome_carga}' | ativo={esta_ativo}")
 
-        # Atualiza gráfico de consumo da aba de gráficos, se presente
+        # Propaga consumo atualizado para o gráfico de desempenho
         if hasattr(tela_graficos, 'atualizar_consumo_grafico'):
             consumo_total = sum(
                 info["potencia"] for info in janela.config_cargas.values() if info.get("ativo", True)
