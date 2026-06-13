@@ -481,53 +481,36 @@ class DashboardEnergia(QMainWindow):
     def _recalcular_kpis_imediato(self):
         """
         Recalcula consumo e saldo com base no estado atual de config_cargas
-        e atualiza os labels KPI do topo imediatamente.
-        Chamado sempre que uma carga é ligada/desligada manualmente ou pela IA.
+        e atualiza os três labels KPI do topo imediatamente.
+        Chamado por atualizar_status_carga_lateral sempre que uma carga muda.
         """
-        novo_consumo = sum(
-            info["potencia"]
-            for info in self.config_cargas.values()
-            if info.get("ativo", True)
-        )
-        novo_consumo = round(max(0.2, novo_consumo), 2)
+        try:
+            novo_consumo = round(max(0.2, sum(
+                info["potencia"]
+                for info in self.config_cargas.values()
+                if info.get("ativo", True)
+            )), 2)
 
-        # Mantém a geração já calculada pelo loop; recalcula só o saldo
-        nova_geracao = self.geracao_atual
-        novo_saldo = round(nova_geracao - novo_consumo, 2)
+            nova_geracao = self.geracao_atual
+            novo_saldo = round(nova_geracao - novo_consumo, 2)
 
-        # Persiste nas variáveis globais
-        self.consumo_atual = novo_consumo
-        self.saldo_atual = novo_saldo
+            self.consumo_atual = novo_consumo
+            self.saldo_atual   = novo_saldo
 
-        # --- LOG DE DIAGNÓSTICO (remover após validar) ---
-        print(f"[KPI] GERAÇÃO ATUAL   : {nova_geracao:.2f} kW  (self.geracao_atual)")
-        print(f"[KPI] CONSUMO ATUAL   : {novo_consumo:.2f} kW")
-        print(f"[KPI] SALDO CALCULADO : {novo_saldo:.2f} kW")
-        print(f"[KPI] lbl_geracao antes: {self.lbl_val_geracao.text()}")
-        # --------------------------------------------------
+            self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kW")
+            self.lbl_val_geracao.setText(f"{nova_geracao:.1f} kW")
+            sinal = "+" if novo_saldo > 0 else ""
+            self.lbl_val_saldo.setText(f"{sinal}{novo_saldo:.1f} kW")
+            if novo_saldo >= 0:
+                self.lbl_val_saldo.setStyleSheet(
+                    "font-size: 22px; font-weight: bold; color: #00E676; border: none; background: transparent;")
+            else:
+                self.lbl_val_saldo.setStyleSheet(
+                    "font-size: 22px; font-weight: bold; color: #E53935; border: none; background: transparent;")
 
-        # Atualiza os três labels KPI imediatamente
-        self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kW")
-
-        # ✅ CORREÇÃO: lbl_val_geracao estava ausente — geração ficava congelada
-        # até o próximo tick do timer (2 s). Agora é atualizado junto com
-        # consumo e saldo sempre que uma carga muda de estado.
-        self.lbl_val_geracao.setText(f"{nova_geracao:.1f} kW")
-
-        sinal = "+" if novo_saldo > 0 else ""
-        self.lbl_val_saldo.setText(f"{sinal}{novo_saldo:.1f} kW")
-        if novo_saldo >= 0:
-            self.lbl_val_saldo.setStyleSheet(
-                "font-size: 22px; font-weight: bold; color: #00E676; border: none; background: transparent;")
-        else:
-            self.lbl_val_saldo.setStyleSheet(
-                "font-size: 22px; font-weight: bold; color: #E53935; border: none; background: transparent;")
-
-        # --- LOG DE DIAGNÓSTICO (remover após validar) ---
-        print(f"[KPI] lbl_geracao depois: {self.lbl_val_geracao.text()}")
-        print(f"[KPI] lbl_saldo  depois: {self.lbl_val_saldo.text()}")
-        print("─" * 50)
-        # --------------------------------------------------
+            print(f"[KPI-IMD] consumo={novo_consumo:.2f} geracao={nova_geracao:.2f} saldo={novo_saldo:.2f}")
+        except Exception as e:
+            print(f"[KPI-IMD-ERRO] {e}")
 
     # ======================================================================
     # 🔄 LOOP DE PROCESSAMENTO EM TEMPO REAL OPERACIONAL
@@ -569,13 +552,9 @@ class DashboardEnergia(QMainWindow):
 
             if geracao_externa is not None and geracao_externa > 0.0:
                 nova_geracao = round(geracao_externa, 2)
-                # --- LOG DE DIAGNÓSTICO ---
-                print(f"[LOOP-GER] Fonte: simulador externo → {nova_geracao:.2f} kW")
             else:
                 fator_solar = math.sin(math.pi * (self.hora_atual - 6.0) / 12.0) if 6.0 <= self.hora_atual <= 18.0 else 0.0
                 nova_geracao = round(4.5 * fator_solar + random.uniform(-0.03, 0.03), 2) if fator_solar > 0 else 0.0
-                # --- LOG DE DIAGNÓSTICO ---
-                print(f"[LOOP-GER] Fonte: senoidal (hora={self.hora_atual:.1f}h) → {nova_geracao:.2f} kW")
 
             # 🔋 4. INTEGRAÇÃO PREMIUM DO BALANÇO DE BATERIAS
             instancia_bateria = getattr(self, 'aba_baterias', None) or getattr(self, 'aba_bateria', None)
@@ -617,6 +596,26 @@ class DashboardEnergia(QMainWindow):
                 self.historico_consumo.pop(0)
                 self.historico_geracao.pop(0)
 
+            # 📺 7. KPIs — ATUALIZAÇÃO PRIORITÁRIA
+            # Executada ANTES do canvas para garantir que os labels recebam
+            # os novos valores mesmo que o matplotlib lance exceção abaixo.
+            self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kW")
+            self.lbl_val_geracao.setText(f"{nova_geracao:.1f} kW")
+            sinal = "+" if saldo_rede_externa > 0 else ""
+            self.lbl_val_saldo.setText(f"{sinal}{saldo_rede_externa:.1f} kW")
+            if saldo_rede_externa >= 0:
+                self.lbl_val_saldo.setStyleSheet("font-size: 22px; font-weight: bold; color: #00E676; border: none; background: transparent;")
+            else:
+                self.lbl_val_saldo.setStyleSheet("font-size: 22px; font-weight: bold; color: #E53935; border: none; background: transparent;")
+            print(f"[LOOP] consumo={novo_consumo:.2f} geracao={nova_geracao:.2f} saldo={saldo_rede_externa:.2f}")
+
+        except Exception as e:
+            print(f"[LOOP-ERRO] Bloco de cálculo falhou: {e}")
+            import traceback; traceback.print_exc()
+            return  # Timer continua; só abandona este tick
+
+        # ── BLOCO CANVAS (isolado — falha aqui não afeta KPIs nem variáveis globais)
+        try:
             if hasattr(self.canvas_grafico, 'atualizar_linhas'):
                 self.canvas_grafico.atualizar_linhas(self.historico_horas, self.historico_consumo, self.historico_geracao)
             elif hasattr(self.canvas_grafico, 'plotar_dados'):
@@ -632,26 +631,16 @@ class DashboardEnergia(QMainWindow):
                     bbox=dict(boxstyle="round,pad=0.4", facecolor="#181818", edgecolor="#333333", linewidth=1, alpha=0.9)
                 )
                 self.canvas_grafico.draw()
+        except Exception as e:
+            print(f"[LOOP-CANVAS] Falha no gráfico (KPIs já atualizados): {e}")
 
-            # 📺 7. ATUALIZAÇÃO RENDERIZADA DOS DISPLAYS KPI DO TOPO
-            self.lbl_val_consumo.setText(f"{novo_consumo:.1f} kW")
-            self.lbl_val_geracao.setText(f"{nova_geracao:.1f} kW")
-            # --- LOG DE DIAGNÓSTICO ---
-            print(f"[LOOP-KPI] lbl_geracao → {self.lbl_val_geracao.text()} | lbl_saldo → antes de calc")
-
-            sinal = "+" if saldo_rede_externa > 0 else ""
-            self.lbl_val_saldo.setText(f"{sinal}{saldo_rede_externa:.1f} kW")
-            if saldo_rede_externa >= 0:
-                self.lbl_val_saldo.setStyleSheet("font-size: 22px; font-weight: bold; color: #00E676; border: none; background: transparent;")
-            else:
-                self.lbl_val_saldo.setStyleSheet("font-size: 22px; font-weight: bold; color: #E53935; border: none; background: transparent;")
-            # --- LOG DE DIAGNÓSTICO ---
-            print(f"[LOOP-KPI] lbl_saldo  → {self.lbl_val_saldo.text()}")
-
-            # 🧠 8. ALIMENTAÇÃO DINÂMICA DAS EXTENSÕES MODULARES (IA E GRÁFICOS)
+        # ── BLOCO MÓDULOS EXTERNOS (IA e Gráficos de Desempenho)
+        try:
             if self.aba_ia and hasattr(self.aba_ia, 'setHtml'):
                 status_cor = "#00E676" if nova_geracao > novo_consumo else "#FF5252"
-                dica_ia = "Fluxo superavitário. Matriz injetando energia no banco de baterias." if nova_geracao > novo_consumo else "Atenção: Sistema em déficit. Célula de Lítio sustentando cargas seletivas."
+                dica_ia = ("Fluxo superavitário. Matriz injetando energia no banco de baterias."
+                           if nova_geracao > novo_consumo
+                           else "Atenção: Sistema em déficit. Célula de Lítio sustentando cargas seletivas.")
                 self.aba_ia.setHtml(f"""
                     <h2 style='color: #00E676; font-family: sans-serif;'>🧠 Recomendações de Inteligência (EMS)</h2>
                     <p style='color: white; font-size: 13px;'><b>Horário de Análise:</b> {texto_hora}</p>
@@ -663,6 +652,5 @@ class DashboardEnergia(QMainWindow):
 
             if self.aba_graficos and hasattr(self.aba_graficos, 'update_plot'):
                 self.aba_graficos.update_plot(novo_consumo, nova_geracao)
-
         except Exception as e:
-            print(f"Erro no loop do dashboard: {e}")
+            print(f"[LOOP-EXTERNO] Módulos externos falharam: {e}")
