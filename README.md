@@ -1,97 +1,193 @@
-# EnergiaCerta
+# ⚡ EnergiaCerta
 
-**EnergiaCerta** é um dashboard desktop para monitoramento e gerenciamento inteligente de energia residencial/solar, com interface gráfica em **PySide6 (Qt)**. O sistema simula (ou lê de um Arduino real) dados de geração solar e consumo das cargas, exibe métricas em tempo real e conta com uma **IA de gerenciamento de carga** que desliga e religa automaticamente equipamentos não críticos conforme o saldo de energia disponível.
+> A modern desktop application for **residential solar energy monitoring and management**, built with **Python** and **PySide6 (Qt)**.
 
----
-
-# Funcionalidades
-
-- **Dashboard principal** com KPIs de consumo, geração e saldo de energia em tempo real
-- **Aba de Cargas Críticas** — cadastro de cargas (eletrodomésticos/equipamentos), com prioridade, status crítico/não crítico e ligar/desligar manual
-- **Aba de Banco de Baterias** — telemetria de tensão, corrente, temperatura e estado de carga (SOC)
-- **Aba de Gráficos de Desempenho** — histórico de consumo x geração em gráficos e tabelas
-- **Aba de Recomendações e IA** — log de decisões automáticas tomadas pelo algoritmo de gerenciamento
-- **IA de corte de carga**: ao detectar déficit energético sustentado, desliga automaticamente a carga não crítica de menor prioridade (maior potência primeiro em caso de empate) e a religa quando há sobra de geração e bateria suficiente
-- **Integração com Arduino** via porta serial — detecta a conexão, lê corrente em tempo real e permite cadastrar a carga física detectada através de um popup
-- **Persistência em JSON** — configurações de cargas (`cargas_db.json`) e histórico de energia (`historico_energia_db.json`)
-- **Modo simulação** completo (sem hardware) para desenvolvimento e testes
+EnergiaCerta is a desktop dashboard designed to monitor residential energy generation and consumption in real time. The application supports both **simulation mode** and **Arduino integration**, providing an intuitive interface for energy monitoring, battery management, historical analysis, and automated load management.
 
 ---
 
-# Estrutura do Projeto
+## 📸 Screenshots
 
-```
+### Dashboard
+
+<p align="center">
+  <img width="1523" height="915" alt="image" src="https://github.com/user-attachments/assets/4c43a482-7d31-4c6f-a349-deaccd7e10d8" />
+
+</p>
+
+---
+
+### Critical Loads
+
+<p align="center">
+  <img width="1550" height="927" alt="image" src="https://github.com/user-attachments/assets/e3d3c8c3-62a2-4a70-aa07-610a841d6dc4" />
+
+</p>
+
+---
+
+### Battery Monitoring
+
+<p align="center">
+  <img width="1537" height="930" alt="image" src="https://github.com/user-attachments/assets/93c6a600-75ff-4e0b-9e41-749b6a6b6a07" />
+
+</p>
+
+---
+
+### Performance Charts
+
+<p align="center">
+  <img width="1542" height="930" alt="image" src="https://github.com/user-attachments/assets/0acb0598-77f6-43a5-9976-e451bd469304" />
+
+</p>
+
+---
+
+### Recommendations
+
+<p align="center">
+  <img width="1545" height="922" alt="image" src="https://github.com/user-attachments/assets/8ae5e626-29c5-44e9-b2c9-8b1f12b7d37e" />
+
+</p>
+
+---
+
+## ✨ Features
+
+- Real-time dashboard for energy generation and consumption
+- Critical and non-critical load management
+- Battery monitoring (Voltage, Current, Temperature and State of Charge)
+- Historical performance charts
+- Automated load management algorithm
+- Arduino serial communication support
+- Simulation mode for development and testing
+- JSON-based local data persistence
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|-----------|--------------|
+| Language | Python |
+| GUI | PySide6 (Qt for Python) |
+| Data Visualization | Matplotlib |
+| Hardware Integration | Arduino + PySerial |
+| Storage | JSON |
+| Version Control | Git & GitHub |
+
+---
+
+## 📂 Project Structure
+
+```text
 EnergiaCerta/
-├── Main.py                          # Ponto de entrada da aplicação
-├── leitor.py                        # Leitor de dados (simulação ou Arduino real)
-├── cargas_db.json                   # Banco de dados das cargas cadastradas
-├── historico_energia_db.json        # Histórico de leituras de energia
+│
+├── Main.py
+├── leitor.py
+├── cargas_db.json
+├── historico_energia_db.json
 │
 ├── Core/
-│   ├── banco_dados.py                # Funções de carregar/salvar dados em JSON
-│   ├── comunicacao_serial.py         # Thread de monitoramento da conexão com Arduino
-│   └── simulador.py                  # Simulador de dados de consumo/geração
+│   ├── banco_dados.py
+│   ├── comunicacao_serial.py
+│   └── simulador.py
 │
 └── Interface/
-    ├── dashboard.py                  # Janela principal (DashboardEnergia)
+    ├── dashboard.py
     ├── abas/
-    │   ├── aba_cargas.py             # Gerenciamento de cargas críticas
-    │   ├── aba_baterias.py           # Telemetria do banco de baterias
-    │   ├── aba_graficos.py           # Gráficos de desempenho
-    │   └── aba_ia.py                 # Recomendações e status da IA
     ├── componentes/
-    │   ├── grafico_tempo_real.py     # Canvas de gráfico em tempo real
-    │   ├── painel_bateria.py
-    │   ├── painel_cargas.py
-    │   └── painel_simulacao.py
     └── assets/
-        └── logo.png
 ```
 
 ---
 
-## 🔧 Requisitos
+## 🚀 Getting Started
 
-- Python 3.10+
-- [PySide6](https://pypi.org/project/PySide6/) (inclui PySide6-Charts)
-- [pyserial](https://pypi.org/project/pyserial/) (opcional, necessário apenas para integração com Arduino)
+Clone the repository
 
----
+```bash
+git clone https://github.com/arthur-afonso-GIT/EnergiaCerta.git
+```
 
-A aplicação abrirá o dashboard principal com as abas:
+Enter the project folder
 
-| Aba | Descrição |
-|---|---|
-| ⚙️ Cargas Críticas | Cadastro e controle das cargas do sistema |
-| 🔋 Banco de Baterias | Tensão, corrente, temperatura e SOC |
-| 📈 Gráficos de Desempenho | Histórico de consumo e geração |
-| 🧠 Recomendações e IA | Log de ações automáticas da IA |
+```bash
+cd EnergiaCerta
+```
 
----
+Install the dependencies
 
-# Integração com Arduino
+```bash
+pip install -r requirements.txt
+```
 
-Por padrão, o sistema roda em **modo simulação**, gerando dados de consumo e geração automaticamente (veja `Core/simulador.py` e `leitor.py`).
+Run the application
 
-Para usar hardware real:
-
-1. Conecte o Arduino via USB (porta padrão configurada: `COM3`/`COM8`, ajustável em `Main.py` e `Core/comunicacao_serial.py`)
-2. O Arduino deve enviar dados pela serial no formato `corrente,...` (em Amperes), a 9600 baud
-3. Ao detectar a conexão, um popup permite nomear a carga física, definir potência, prioridade e se é crítica
-4. Para ativar a leitura via `leitor.py`, defina `USAR_HARDWARE_REAL = True`
+```bash
+python Main.py
+```
 
 ---
 
-# Lógica da IA de Gerenciamento
+## 🔌 Arduino Integration
 
-1. A cada ciclo, calcula o saldo real de energia (geração − consumo, considerando bateria)
-2. Se houver déficit por **2 ciclos consecutivos**, desliga a carga não crítica de **menor prioridade** (e maior potência em caso de empate)
-3. Registra a ação no log de recomendações e, se houver Arduino conectado, envia o comando de corte via serial
-4. Quando há sobra de geração solar e o SOC da bateria está acima de 40%, religa as cargas desligadas anteriormente, respeitando a prioridade e o limite de consumo
+The application runs in **Simulation Mode** by default, generating realistic energy production and consumption data without requiring external hardware.
+
+To use a real Arduino:
+
+1. Connect the board via USB.
+2. Configure the correct serial port (`COM3`, `COM8`, etc.).
+3. Enable hardware mode in the configuration.
+4. Upload firmware capable of sending current measurements over the serial connection.
+
+When a new physical load is detected, EnergiaCerta allows the user to register it directly from the interface.
 
 ---
 
-# Dados Persistidos
+## ⚙️ Automated Load Management
 
-- **`cargas_db.json`** — lista de cargas cadastradas (nome, potência, prioridade, status crítico, ativo/inativo)
-- **`historico_energia_db.json`** — histórico de leituras (timestamp, geração, consumo, saldo), limitado aos últimos 1000 registros
+EnergiaCerta continuously evaluates the relationship between energy generation, consumption, and battery status.
+
+When an energy deficit is detected, the system automatically disconnects non-critical loads based on their priority and power consumption. Once sufficient energy becomes available again, disconnected loads are restored automatically following the configured priority order.
+
+---
+
+## 💾 Data Persistence
+
+The application stores all local information using JSON files.
+
+| File | Description |
+|------|-------------|
+| `cargas_db.json` | Registered loads and configuration |
+| `historico_energia_db.json` | Energy generation and consumption history |
+
+---
+
+## 🎯 Project Goals
+
+EnergiaCerta was developed to demonstrate the implementation of a complete desktop application that combines graphical interfaces, hardware communication, real-time monitoring, data visualization, and energy management concepts.
+
+The project emphasizes modular software architecture, clean code organization, and integration between software and embedded systems.
+
+---
+
+## 🚧 Future Improvements
+
+- User authentication
+- Cloud synchronization
+- PostgreSQL support
+- Advanced analytics dashboard
+- Energy consumption forecasting
+- Export reports (PDF/Excel)
+- Mobile companion application
+
+---
+
+## 👨‍💻 Author
+
+**Arthur Florêncio Afonso**
+
+- LinkedIn: https://www.linkedin.com/in/arthur-flor%C3%AAncio-afonso/
+- GitHub: https://github.com/arthur-afonso-GIT
